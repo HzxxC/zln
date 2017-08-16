@@ -1,0 +1,53 @@
+{:hook('body_start')}
+<!-- nav -->
+<nav class="nav container pad">
+	<foreach name="main_nav" item="vo" key="k">
+		<ul>
+			<li class="text-bold"><a href="{$vo.href}">{$vo.label}</a></li>
+			<foreach name="vo['children_navs']" item="v">
+				<li><a href="{$v.href}">{$v.label}</a></li>
+			</foreach>
+		</ul>
+	</foreach>
+	<!-- <ul class="contact">
+		<li><a href="#">联系我们</a></li>
+	</ul> -->
+</nav>
+<!-- top_notice -->
+<div class="top-notice container clearfix">
+	<div class="top pull-left">
+		<php>
+			$essence = sp_sql_posts("cid:15;field:post_title,post_excerpt,object_id,term_id,smeta;order:post_modified desc;limit:2;"); 
+		</php>
+		<ul class="clearfix">
+			<foreach name="essence" item="vo">
+				<php>$smeta=json_decode($vo['smeta'],true);</php>
+				<li>
+					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id']))}" class="clearfix">
+						<if condition="empty($smeta['thumb'])"> 
+							<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.post_title}"  class="pull-left"/>
+						<else /> 
+							<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$vo.post_title}"  class="pull-left" />
+						</if>
+						<span class="pull-left">{$vo.post_title}</span>
+					</a>
+				</li>
+			</foreach>
+		</ul>
+	</div>
+	<div class="notice pull-right">
+		<a href="#" class="title">声明公告</a>
+		<ul>
+			<php>
+				$notice = sp_sql_posts("cid:16;field:post_title,post_excerpt,object_id,term_id;order:post_modified desc;limit:3;"); 
+			</php>
+			<foreach name="notice" item="vo">
+				<li>
+					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id']))}">
+						{$vo.post_title}
+					</a>
+				</li>
+			</foreach>
+		</ul>
+	</div>
+</div>

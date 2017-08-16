@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{$name} {$seo_title} {$site_name}</title>
+	<meta name="keywords" content="{$seo_keywords}" />
+	<meta name="description" content="{$seo_description}">
+    <tc_include file="Public:head" />
+</head>
+<body>
+<tc_include file="Public:top" />
+<tc_include file="Public:nav" />
+
+<!-- list -->
+<div class="container main clearfix">
+	<div class="pull-left list">
+		<div class="title">
+			<php>
+				$nav_link = get_back_nav_link($navid);
+			</php>
+			<ul>
+				<li>您现在正在浏览：</li>
+				<foreach name="nav_link" item="link">
+					<li><a href="{$link.href}">{$link.label}</a></li>
+				</foreach>
+			</ul>
+		</div>
+		<div class="ul-list">
+			<php>
+				$lists = sp_sql_posts_paged("cid:$cat_id;order:post_date DESC;",1);
+			</php>
+			<ul>
+				<volist name="lists['posts']" id="vo">
+				<php>
+					$vo['post_date'] = substr($vo['post_date'], 0, 10);
+				</php>
+				<li>
+					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'], 'navid'=>$navid))}" target="blank">{:msubstr($vo['post_title'],0,40)}</a>
+					<span class="date pull-right">[{$vo.post_date}]</span>
+				</li>
+				</volist>
+			</ul>
+			<div class="pages">
+				<p>共<span>{$lists['count']}</span>条记录<span class="now_page">{$p}</span>/{$lists['total_pages']}{$lists['page']}</p>
+			</div>
+		</div>
+	</div>
+	<div class="pull-right hot">
+		<ul>
+			<php>
+				$recommend_post=sq_recommend_post("field:post_title,post_excerpt,object_id,term_id,smeta;order:listorder asc;limit:14;", array("recommended"=>"1")); 
+			</php>
+			<volist name="recommend_post['posts']" id="vo" key="k">
+				<php>
+					$post_title = str_replace('“', '"', $vo['post_title']);
+					$post_title = str_replace('”', '"', $post_title);
+					$smeta=json_decode($vo['smeta'],true);
+				</php>
+				<if condition="$k eq 1 or $k eq 8">
+					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}" class="top-img">
+						<if condition="empty($smeta['thumb'])"> 
+							<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.post_title}"/>
+						<else /> 
+							<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$vo.post_title}" />
+						</if>
+					</a> 
+					<li class="text-bold">
+				<else />
+					<li>
+				</if>
+						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,18)}</a>
+					</li>
+			</volist>
+		</ul>
+	</div>
+</div>
+
+<tc_include file="Public:footer" />
+    
+</body>
+</html>

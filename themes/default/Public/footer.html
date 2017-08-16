@@ -1,0 +1,38 @@
+<!-- Footer ================================================== -->
+{:hook('footer')}
+<!-- footer -->
+<footer class="footer container">
+	<div class="links">
+		<h3>友情链接</h3>
+		<php>$links=sp_getlinks(false);</php>
+		<ul>
+			<foreach name="links" item="vo">
+				<li><a href="{$vo.link_url}" target="{$vo.link_target}">{$vo.link_name}</a></li>
+			</foreach>
+		</ul>
+	</div>
+	<div class="web-options">
+		<ul>
+			<li><a href="">联系我们</a></li>
+			<li><a href="">发展历程</a></li>
+			<li><a href="#">设为首页</a></li>
+			<li><a href="#">加入收藏</a></li>
+		</ul>
+	</div>
+	<p class="copyright">{$site_copyright}</p>
+	<div class="link-imgs">
+		<php>$link_images=sp_getlinks(true);</php>
+		<volist name="link_images" id="vo">
+			<a href="{$vo.link_url}"><img src="{:sp_get_asset_upload_path($vo['link_image'])}" alt="" /></a>
+		</volist>
+    </div>
+    <div class="info">
+    	<p>
+    		<span class="address">地址：{$site_address}</span>
+    		<span class="postcode"> 邮编：{$site_postcode}</span>
+    		<span class="email">投稿信箱：{$site_email}</span>
+    	</p>
+    	<p> Powered by {$site_powered_by}</p>
+	   	<a href="http://www.cnzz.com/stat/website.php?web_id=5022859" target="_blank" title="站长统计"><img border="0" hspace="0" vspace="0" src="http://icon.cnzz.com/img/pic.gif"></a>
+	</div>
+</footer>

@@ -1,0 +1,392 @@
+@charset 'utf-8';
+
+* {
+	padding: 0;
+	margin: 0
+}
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+html, body {
+	width: 100%;
+	height: 100%
+}
+body {
+	font-family: "Microsoft YaHei", sans-serif;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #333;
+	background-color: #fff;
+}
+a {
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+ul, ol {
+	list-style: none;
+	margin: 0;
+}
+p {
+	margin: 0;
+}
+.clearfix:before, .clearfix:after {
+	display: table;
+	content: '';
+}
+.clearfix:after {
+	clear: both;
+}
+
+.container {
+	width: 1000px;
+	margin: 0 auto;
+}
+.pull-left {
+	float: left;
+}
+.pull-right {
+	float: right;
+}
+.pad {
+	padding-left: 25px;
+	padding-right: 25px;
+}
+.text-bold {
+	font-weight: 700;
+}
+
+
+
+
+header.header {
+	background: url('../images/header_bg.png') repeat-x;
+	background-size: contain;
+	color: #fff;
+}
+.logo {
+	padding: 55px 20px 0;
+}
+.logo > img {
+	display: block;
+	width: 475px;
+}
+.date-collect {
+	padding: 45px 36px 15px 0;
+	text-align: right;
+}
+.date-collect ul li {
+	display: inline-block;
+	padding-left: 20px;
+}
+.date-collect ul li a {
+	color: #fff;
+}
+.department {
+	padding: 0 30px 20px 0;
+}
+.department dl {
+	margin-bottom: 5px;
+}
+.department dl.major-manager dd {
+	letter-spacing: 7px;
+}
+.department dl.sponsor dd {
+	letter-spacing: 1px;
+}
+.department dl dt, .department dl dd {
+	display: inline-block;
+	font-size: 16px;
+	font-weight: 600;
+	margin: 0;
+}
+
+.nav {
+	position: relative;
+}
+.nav ul {
+	display: inline-block;
+	margin-right: 15px;
+}
+.nav ul:last-child {
+	position: absolute;
+	bottom: 0px;
+	right: -2px;
+}
+.nav ul li {
+	display: inline-block;
+	padding: 10px 12px 0px 0;
+}
+.nav ul li > a {
+	color: #333;
+}
+.nav .contact {
+	position: absolute;
+	bottom: 0px;
+	right: -2px;
+}
+
+.top-notice {
+	margin-top: 5px;
+	padding: 5px;
+	background-color: #F2F2F2;
+	border: 1px solid #E7E7E7;
+	border-width: 0 1px 1px 1px;
+}
+.top-notice > .top {
+	width: 665px;
+}
+.top ul li {
+	float: left;
+	width: 330px;
+}
+.top ul li a > span {
+	width: 201px;
+    height: 60px;
+    margin-top: 5px;
+    font-size: 12px;
+    padding: 0 10px;
+    line-height: 20px;
+    color: #424242;
+}
+.top ul li a:hover span {
+	color: #ff3300;
+    text-decoration: underline;
+}
+.top ul li img {
+	display: block;
+	width: 110px;
+	height: 70px;
+}
+.top-notice > .notice {
+	width: 300px;
+    height: 68px;
+    background-color: #fff;
+    margin-right: 5px;
+    padding: 0;
+    border: 1px solid #4293DC;
+}
+.notice > .title {
+	font-size: 14px;
+	line-height: 14px;
+    font-weight: bold;
+    width: 24px;
+    height: 67px;
+    background-color: #4293DC;
+    padding: 5px 0 0 5px;
+    color: #fff;
+    float: left;
+}
+.notice ul {
+	margin-left: 24px;
+}
+.notice ul li {
+	padding: 2px 0 0 10px;
+	font-size: 12px;
+}
+.notice ul li a {
+	color: #333;
+}
+.notice a:hover {
+	text-decoration: underline;
+}
+
+.main {
+	margin-top: 5px;
+}
+.list {
+	width: 710px;
+}
+.list > .title {
+	height: 36px;
+    line-height: 34px;
+    background-image:linear-gradient(to bottom, #FEFEFE,#F7F7F7);
+    border: 1px solid #EAEAEA;
+    text-indent: 10px;
+    font-size: 14px;
+}
+.list > .title > ul li {
+	display: inline-block;
+}
+.list > .title ul li a {
+	color: #333;
+}
+.list > .title ul li:not(:last-child) a:after {
+	display: inline-block;
+	content: ">>";
+	font-family: "宋体";
+	letter-spacing: -5px;
+}
+.ul-list {
+	margin-top: 15px;
+}
+.ul-list ul li {
+	position: relative;
+	padding: 12px 15px;
+	border-bottom: 1px dashed #BABABA
+}
+.ul-list ul li:last-child {
+	border: none;
+}
+.ul-list ul li a {
+	color: #333;
+}
+
+.ul-list ul li:before {
+	display: block;
+	content: "";
+
+	position: absolute;
+	top: 20px;
+	left: 2px;
+
+	width: 6px;
+	height: 6px;
+	background-color: #818181;
+}
+.hot {
+	width: 250px;
+	padding: 0 10px 0 0;
+}
+.hot .top-img {
+	display: block;
+	margin-top: 10px;
+}
+.hot .top-img img {
+	display: block;
+	width: 100%;
+	height: 120px;
+}
+.hot ul li {
+	position: relative;
+	font-size: 13px;
+	padding: 8px 0 0 5px;
+}
+.hot ul li:before {
+	display: block;
+	content: '';
+
+	position: absolute;
+	top: 15px;
+	left: -8px;
+
+	width: 3px;
+	height: 3px;
+	border: 1px solid #ccc;
+	border-radius: 50%;
+	background-color: #ccc;
+}
+.hot ul li a {
+	color: #333;
+}
+.content h3 {
+	width: 60%;
+	font-size: 24px;
+	margin: 25px auto 15px;
+	text-align: center;
+}
+.content .article-info {
+	padding-bottom: 15px;
+	margin-bottom: 25px;
+	border-bottom: 1px dashed #ccc;
+	text-align: center;
+}
+.article-info > span {
+	display: inline-block;
+	padding-right: 15px;
+}
+.content .article {
+	margin-bottom: 35px;
+}
+.content .pre-next-article > div {
+	color: #000;
+	font-weight: 700;
+	margin: 5px 0;
+}
+.content .pre-next-article a {
+	color: #333;
+	font-weight: 500;
+}
+.content .pre-next-article a:hover {
+	color: #ff3300;
+}
+
+footer.footer {
+	margin-top: 35px;
+}
+.footer .links h3 {
+	font-size: 21px;
+	color: #747474;
+	padding: 10px 20px;
+}
+.links ul {
+	background-color: #3398E6;
+	padding: 15px 20px;
+}
+.links ul li {
+	display: inline-block;
+	padding-right: 15px;
+}
+.links ul li a {
+	color: #fff;
+	font-weight: 600;
+}
+.web-options {
+	margin-top: 2px;
+	background-color: #eee;
+	border: 1px solid #eaeaea;
+	text-align: center;
+}
+.web-options ul li {
+	position: relative;
+	display: inline-block;
+	padding: 10px 15px;
+}
+.web-options ul li:not(:last-child):after {
+	display: block;
+	content: "";
+	
+	position: absolute;
+	right: -4px;
+	top: 12px;
+
+	width: 1px;
+	height: 16px;
+	border-left: 1px dashed #5E5E5E;
+}
+.web-options ul li a {
+	color: #5E5E5E;
+}
+.footer p.copyright {
+	text-align: center;
+	color: #999;
+	margin: 10px 0;
+	font-size: 13px;
+}
+.footer .link-imgs {
+	margin: 10px 0;
+	text-align: center;
+}
+.footer .link-imgs a {
+	display: inline-block;
+}
+.footer .link-imgs img {
+	display: block;
+	width: 117px;
+	height: 50px;
+}
+.footer .info {
+	color: #999;
+	text-align: center;
+	font-size: 13px;
+}
+.info > p {
+	margin: 5px 0;
+}
+.info > p > span {
+	display: inline-block;
+	padding-right: 15px;
+}
