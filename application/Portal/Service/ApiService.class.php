@@ -74,7 +74,7 @@ class ApiService {
     	    ->limit($limit)
     	    ->select();
     	}else{
-    	    $pagetpl = empty($pagetpl) ? '{first}{prev}{liststart}{listend}{next}{last}' : $pagetpl;
+    	    $pagetpl = empty($pagetpl) ? '<div class="newpager">共有{recordcount}条记录&nbsp;&nbsp;第&nbsp;{pageindex}&nbsp;页&nbsp;/&nbsp;共&nbsp;{pagecount}&nbsp;页&nbsp;&nbsp;{first}{prev}{next}{last}&nbsp;&nbsp;第&nbsp;{jump}&nbsp;页</div>' : $pagetpl;
     	    $totalsize=$term_relationships_model
     	    ->alias("term_relationships")
     	    ->join($join)
@@ -86,14 +86,8 @@ class ApiService {
     	    $pagesize = intval($pagesize);
     	    $page_param = C("VAR_PAGE");
     	    $page = new \Page($totalsize,$pagesize);
-    	    // $page->setLinkWraper("li");
-    	    // $page->__set("PageParam", $page_param);
-            // if(sp_is_mobile()){
-            //     $pagesetting= array("listlong" => "2", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => "");
-            // }else{
-            //     $pagesetting=array("first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => "");
-            // }
-    	    $page->SetPager('default', $pagetpl,$pagesetting);
+            $pagesetting=array("first" => "首页", "last" => "末页", "prev" => "上一页", "next" => "下一页", "disabledclass" => "","jump"=>"select");
+            $page->SetPager('default', $pagetpl, $pagesetting);
     	    $posts=$term_relationships_model
     	    ->alias("term_relationships")
     	    ->join($join)

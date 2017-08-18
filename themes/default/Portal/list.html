@@ -26,51 +26,104 @@
 		</div>
 		<div class="ul-list">
 			<php>
-				$lists = sp_sql_posts_paged("cid:$cat_id;order:post_date DESC;",1);
+				$lists = sp_sql_posts_paged("cid:$cat_id;order:post_date DESC;",15);
 			</php>
 			<ul>
 				<volist name="lists['posts']" id="vo">
 				<php>
 					$vo['post_date'] = substr($vo['post_date'], 0, 10);
+					$post_title = str_replace('“', '"', $vo['post_title']);
+					$post_title = str_replace('”', '"', $post_title);
 				</php>
 				<li>
-					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'], 'navid'=>$navid))}" target="blank">{:msubstr($vo['post_title'],0,40)}</a>
+					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'], 'navid'=>$navid))}" target="blank">{:msubstr($post_title,0,40)}</a>
 					<span class="date pull-right">[{$vo.post_date}]</span>
 				</li>
 				</volist>
 			</ul>
 			<div class="pages">
-				<p>共<span>{$lists['count']}</span>条记录<span class="now_page">{$p}</span>/{$lists['total_pages']}{$lists['page']}</p>
+				{$lists['page']}
 			</div>
 		</div>
 	</div>
 	<div class="pull-right hot">
 		<ul>
 			<php>
-				$recommend_post=sq_recommend_post("field:post_title,post_excerpt,object_id,term_id,smeta;order:listorder asc;limit:14;", array("recommended"=>"1")); 
+				$attention_post = sp_sql_posts("cid:15;field:post_title,object_id,term_id,smeta;order:post_date asc;limit:7;"); 
+
+				$cid = empty($cat_id) ? '' : 'cid:'.$cat_id;
+				$tag = $cid.";field:ad_title,object_id,term_id,smeta;order:add_date desc;limit:2;";
+				$ad_recommend = sq_recommend_ad($tag);
+				if ($ad_recommend) 
+					$attention_post = ad_array_splice($attention_post, $ad_recommend, array(6, 8));
 			</php>
-			<volist name="recommend_post['posts']" id="vo" key="k">
+			<volist name="attention_post" id="vo" key="k">
 				<php>
 					$post_title = str_replace('“', '"', $vo['post_title']);
 					$post_title = str_replace('”', '"', $post_title);
 					$smeta=json_decode($vo['smeta'],true);
 				</php>
-				<if condition="$k eq 1 or $k eq 8">
-					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}" class="top-img">
+				<if condition="$k eq 1">
+					<li class="text-bold">
+						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,17)}</a>
+					</li>
+				<elseif condition="$k eq 7 and $vo['ad_title']" />
+					<li class="ad">
+						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,15)}</a>
+					</li>
+				<elseif condition="$k eq 9 and $vo['ad_title']" />
+					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid, 'type'=>'ad'))}" class="top-img">
 						<if condition="empty($smeta['thumb'])"> 
-							<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.post_title}"/>
+							<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 						<else /> 
-							<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$vo.post_title}" />
+							<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$vo.ad_title}" />
 						</if>
 					</a> 
-					<li class="text-bold">
 				<else />
 					<li>
-				</if>
 						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,18)}</a>
 					</li>
+				</if>
 			</volist>
 		</ul>
+		<div class="web-intro">
+			<h3 class="title">全国中老年网</h3>
+			<ul>
+				<li data-id="A"><a href="javascript:;">中心简介</a></li>
+				<li data-id="B"><a href="javascript:;">组织机构</a></li>
+				<li class="active" data-id="C"><a href="javascript:;">编委会</a></li>
+			</ul>
+			<div class="detail">
+				<div id="C" class="box active">
+					<dl>
+						<dt>总&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编：</dt>
+						<dd>李伟</dd>
+					</dl>
+					<dl>
+						<dt>执行总编：</dt>
+						<dd>许全斌</dd>
+					</dl>
+					<dl>
+						<dt>副&nbsp;&nbsp;总&nbsp;&nbsp;编：</dt>
+						<dd><span>王晨</span><span>杜洁</span></dd>
+					</dl>
+					<dl>
+						<dt>执行主编：</dt>
+						<dd><span>李晓</span></dd>
+					</dl>
+					<dl>
+						<dt style="vertical-align: top;">副&nbsp;&nbsp;主&nbsp;&nbsp;编：</dt>
+						<dd>
+							<span>张彬</span>
+							<span>刘黎明</span>
+							<span>陈安岳</span>
+							<span>安燕</span>
+							<span>姚安斌</span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 

@@ -17,7 +17,9 @@
 <div class="top-notice container clearfix">
 	<div class="top pull-left">
 		<php>
-			$essence = sp_sql_posts("cid:15;field:post_title,post_excerpt,object_id,term_id,smeta;order:post_modified desc;limit:2;"); 
+			$cid = empty($cat_id) ? '' : 'cid:'.$cat_id;
+			$tag = $cid.";field:post_title,object_id,term_id,smeta;order:post_date desc;limit:2;";
+			$essence = sp_sql_posts($tag, array("recommended"=>"1")); 
 		</php>
 		<ul class="clearfix">
 			<foreach name="essence" item="vo">

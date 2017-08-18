@@ -295,11 +295,11 @@ class HomebaseController extends AppframeController {
 	 */
 	private function getNav($id) {
 		$nav_obj = M('nav');
-		$navs = $nav_obj->where(array('cid'=>$id,'status'=>1, 'parentid'=>0))->order(array("listorder" => "ASC"))->select();
+		$navs = $nav_obj->where(array('cid'=>$id,'status'=>1, 'parentid'=>0))->order(array("listorder" => "ASC"))->limit(11)->select();
 
 		foreach ($navs as $key => $nav) {
 			$navs[$key]['href'] = format_href($nav['id'], $nav['href']);
-			$children_navs = $nav_obj->where(array('cid'=>$id,'status'=>1,'parentid'=>$nav['id']))->order(array("listorder" => "ASC"))->select();
+			$children_navs = $nav_obj->where(array('cid'=>$id,'status'=>1,'parentid'=>$nav['id']))->order(array("listorder" => "ASC"))->limit(3)->select();
 			foreach ($children_navs as $k=>$v){
 				$children_navs[$k]['href'] = format_href($v['id'], $v['href']);
 			}

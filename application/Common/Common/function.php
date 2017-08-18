@@ -2202,6 +2202,15 @@ function nav_is_child($id, $array = array()) {
 	} 
 	return $array;	
 	
+} 
+
+function get_nav_childs($id) {
+	$nav_obj= M("Nav");
+	$nav_info = $nav_obj -> where(array('parentid' => $id)) -> field('id, label, long_label, href') -> select();
+	foreach($nav_info as $k => $v) {
+		$nav_info[$k]['href'] = format_href($v['id'], $v['href']);
+	}
+	return $nav_info;
 }
 
 function get_nav_info($id) {
@@ -2229,53 +2238,88 @@ function format_href($id, $h) {
 	$href .= "&navid=".$id;
 	return $href;
 }
+function get_term_id_by_href($h) {
+	$href=htmlspecialchars_decode($h);
+	$hrefold=$href;
+	if(strpos($hrefold,"{")){//序列 化的数据
+		$href=unserialize(stripslashes($h));
+		return $href['param']['id'];
+	}
+}
 
-function sq_recommend_post($tag,$where=array()) {
+function sq_recommend_ad($tag,$where=array()) {
 	
 	$where=is_array($where)?$where:array();
 	$tag=sp_param_lable($tag);
 	
 	$field = !empty($tag['field']) ? $tag['field'] : '*';
 	$limit = !empty($tag['limit']) ? $tag['limit'] : '0,10';
-	$order = !empty($tag['order']) ? $tag['order'] : 'post_date DESC';
+	$order = !empty($tag['order']) ? $tag['order'] : 'add_date DESC';
 
 	//根据参数生成查询条件
-	$where['term_relationships.status'] = array('eq',1);
-	$where['posts.post_status'] = array('eq',1);
+	$where['ad.ad_status'] = array('eq',1);
+	$where['ad_relationships.status'] = array('eq',1);
 
 	if (isset($tag['cid'])) {
 	    $tag['cid']=explode(',', $tag['cid']);
 	    $tag['cid']=array_map('intval', $tag['cid']);
-		$where['term_relationships.term_id'] = array('in',$tag['cid']);
-	}
-
-	if (isset($tag['ids'])) {
-	    $tag['ids']=explode(',', $tag['ids']);
-	    $tag['ids']=array_map('intval', $tag['ids']);
-		$where['term_relationships.object_id'] = array('in',$tag['ids']);
+		$where['ad_relationships.term_id'] = array('in',$tag['cid']);
 	}
 	
 	if (isset($tag['where'])) {
 		$where['_string'] = $tag['where'];
 	}
 
-
-	$join = '__POSTS__ as posts on term_relationships.object_id = posts.id';
-	$join2= '__USERS__ as users on posts.post_author = users.id';
+	$join = C('DB_PREFIX').'ad as ad on ad_relationships.object_id = ad.ad_id';
 	
-	$term_relationships_model= M("TermRelationships");
+	$ad_model= M("AdRelationships");
 	$content=array();
 
-    $posts=$term_relationships_model
-    ->alias("term_relationships")
+    $ads = $ad_model
+    ->alias("ad_relationships")
     ->join($join)
-    ->join($join2)
     ->field($field)
     ->where($where)
+    ->group('ad_relationships.object_id')
     ->order($order)
     ->limit($limit)
     ->select();
 	
-	$content['posts']=$posts;
-	return $content;
+	return $ads;
+}
+
+function ad_array_splice($arr1, $arr2, $position) {
+	foreach ($position as $k =>$v) {
+		if (count($arr1) >= $v) {
+			array_splice($arr1, $v, 0, array($arr2[$k]));	
+		}
+	}
+	return $arr1;
+}
+
+function get_main_nav_and_terms($cid, $where=array(), $limit=6, $ad=false) {
+	$nav_model = M('Nav');
+	$nav_model -> field('id, label, long_label, href') -> where(array('cid'=>$cid, 'status'=>1));
+		if (isset($where)) {
+	    $where['tag'] = explode(',', $where['tag']);
+		$condition['tag'] = array('in',$where['tag']);
+		$nav_model -> where($condition);
+	}
+		
+	$navs = $nav_model -> order('listorder ASC') -> select();
+
+	foreach($navs as $k => $v) {
+		$term_id = get_term_id_by_href($v['href']);
+		$tag = "cid:".$term_id.";field:post_title,object_id,term_id,smeta;order:post_date asc;limit:".$limit.";";
+		$posts = sp_sql_posts($tag);
+		if ($ad) {
+			$ad_tag = "cid:".$term_id.";field:ad_title,object_id,term_id,smeta;order:add_date desc;limit:1;";
+			$ad_recommend = sq_recommend_ad($ad_tag);
+			$navs[$k]['ad'] = $ad_recommend;
+		}
+		$navs[$k]['nav_childs'] = get_nav_childs($v['id']);
+		$navs[$k]['posts'] = $posts;
+	}
+
+	return $navs;
 }

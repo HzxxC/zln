@@ -27,7 +27,8 @@ class NavController extends AdminbaseController {
 		$tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
 		$tree->nbsp = '&nbsp;&nbsp;&nbsp;';
 		foreach ($result as $r) {
-			$r['str_manage'] = '<a href="' . U("nav/add", array("parentid" => $r['id'],"cid"=>$r['cid'])) . '">'.L('ADD_SUB_NAV').'</a> | <a href="' . U("nav/edit", array("id" => $r['id'],"parentid"=>$r['parentid'],"cid"=>$r['cid'])) . '">'.L('EDIT').'</a> | <a class="js-ajax-delete" href="' . U("nav/delete", array("id" => $r['id'])) . '">'.L('DELETE').'</a> ';
+			$r['str_manage'] = '<a href="' . U("nav/add", array("parentid" => $r['id'],"cid"=>$r['cid'])) . '">'.L('ADD_SUB_NAV').'</a> | <a href="' . U("nav/edit", array("id" => $r['id'],"parentid"=>$r['parentid'],"cid"=>$r['cid'])) . '">'.L('EDIT').'</a> ';
+			// $del = "| <a class="js-ajax-delete" href="' . U("nav/delete", array("id" => $r['id'])) . '">'.L('DELETE').'</a> ";
 			$r['status'] = $r['status'] ? L('DISPLAY') : L('HIDDEN');
 			$array[] = $r;
 		}
@@ -52,7 +53,7 @@ class NavController extends AdminbaseController {
 	
 	// 导航菜单添加
 	public function add() {
-		$cid=I('request.cid',0,'intval');
+		$cid=I('request.cid',1,'intval');
 		$result = $this->nav_model->where(array('cid'=>$cid))->order(array("listorder" => "ASC"))->select();
 		$tree = new \Tree();
 		$tree->icon = array('&nbsp;│ ', '&nbsp;├─ ', '&nbsp;└─ ');
@@ -74,7 +75,7 @@ class NavController extends AdminbaseController {
 		$this->assign("navcats",$cats);
 		
 		$navs= $this->_select();
-		
+
 		foreach ($navs as $key=>$navdata){
 		    $tree->init($navdata['items']);
 		    $tpl="<option value='\$rule' >\$spacer\$label</option>";
@@ -153,9 +154,9 @@ class NavController extends AdminbaseController {
 		$nav['href'] = base64_encode($nav['href']);
 			
 		$this->assign($nav);
-		
+
 		$navs= $this->_select();
-		
+
 		foreach ($navs as $key=>$navdata){
 		    $tree->init($navdata['items']);
 		    $tpl="<option value='\$rule' >\$spacer\$label</option>";
