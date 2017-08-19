@@ -15,7 +15,8 @@
 							<th width="80">位置</th>
 							<td>
 							<if condition="$ad['term_id'] eq 1">
-								首页
+								<input type="hidden" name="term[]" value="{$ad['term_id']}"/>
+								<input type="text" value="首页" readonly="true" />
 							<else/>
 								<select multiple="multiple" style="max-height: 100px;" name="term[]">
 								{$taxonomys}</select>
@@ -63,13 +64,13 @@
 								</div>
 							</td>
 						</tr>
-						<tr>
-							<th><b>发布时间</b></th>
-						</tr>
-						<tr>
-							<td><input type="text" name="post[add_date]" value="{:date('Y-m-d H:i:s',time())}" class="js-datetime" style="width: 160px;"></td>
-						</tr>
 						<if condition="$ad['term_id'] neq 1">
+							<tr>
+								<th><b>发布时间</b></th>
+							</tr>
+							<tr>
+								<td><input type="text" name="post[add_date]" value="{:date('Y-m-d H:i:s',time())}" class="js-datetime" style="width: 160px;"></td>
+							</tr>
 							<tr>
 								<th><b>状态</b></th>
 							</tr>

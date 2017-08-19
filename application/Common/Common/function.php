@@ -2310,7 +2310,7 @@ function get_main_nav_and_terms($cid, $where=array(), $limit=6, $ad=false) {
 
 	foreach($navs as $k => $v) {
 		$term_id = get_term_id_by_href($v['href']);
-		$tag = "cid:".$term_id.";field:post_title,object_id,term_id,smeta;order:post_date asc;limit:".$limit.";";
+		$tag = "cid:".$term_id.";field:post_title,object_id,term_id,smeta;order:post_date desc;limit:".$limit.";";
 		$posts = sp_sql_posts($tag);
 		if ($ad) {
 			$ad_tag = "cid:".$term_id.";field:ad_title,object_id,term_id,smeta;order:add_date desc;limit:1;";

@@ -4,8 +4,34 @@
 		<title>{$site_seo_title} {$site_name}</title>
 		<meta name="keywords" content="{$site_seo_keywords}" />
 		<meta name="description" content="{$site_seo_description}">
+		
 		<tc_include file="Public:head" />
+		<!-- Skitter Styles -->
+		<link href="__TMPL__Public/assets/js/skitter/skitter.css" type="text/css" media="all" rel="stylesheet" />
 		<link href="__TMPL__Public/assets/css/slippry/slippry.css" rel="stylesheet">
+		<!-- Skitter JS -->
+		<script type="text/javascript" language="javascript" src="__TMPL__Public/assets/js/skitter/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" language="javascript" src="__TMPL__Public/assets/js/skitter/jquery.easing.1.3.js"></script>
+		<script type="text/javascript" language="javascript" src="__TMPL__Public/assets/js/skitter/jquery.skitter.min.js"></script>
+		 <!-- Init Skitter -->
+		<script type="text/javascript" language="javascript">
+		$(document).ready(function() {
+			$('.skitter-large').skitter({
+			  numbers: true,
+			  dots: false
+			});
+		});
+		</script>
+		<style>
+			img { max-width: none; }
+			.skitter .info_slide { left: inherit !important; transform: inherit !important; background-color: transparent; opacity: 1; }
+			.skitter .info_slide .image_number { background-color: #fff; color: #333; }
+			.skitter .info_slide .image_number.image_number_select { background-color: #C60C31; color: #fff; }
+			.skitter .info_slide .image_number:hover { background-color: #C60C31; color: #fff; }
+			.label_skitter { z-index: 99; background-color: rgba(0, 0, 0, 0.4); background-image: none; }
+			.label_skitter p { color: #fff; width: 240px; }
+			.label_skitter p a { font-size: 12px; color: #fff; }
+		</style>
 	</head>
 <body class="body-white">
 <tc_include file="Public:top" />
@@ -20,7 +46,36 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 <div class="container clearfix index">
 	<div class="pull-left w-1 section-1-left">
 		<div class="pull-left w-3" style="height: 250px; background-color: #f5f5f5;">
-			
+			<div class="tab-slide">
+				<a href="javascript:;" data-id="slide-A" class="active">图片新闻</a>
+				<a href="javascript:;" data-id="slide-B">视频新闻</a>
+			</div>
+			<div class="slide" id="slide-A">
+				<div class="skitter-large-box">
+			        <div class="skitter skitter-large">
+			          <ul>
+			            <li>
+			            	<a href="#cube"><img src="__TMPL__Public/assets/images/demo/image-slider-1.jpg" class="cubeHide" /></a>
+			            	 <div class="label_text">
+				                <p><a href="">Lorem ipsum dolor</a></p>
+				              </div>
+			            </li>
+			            <li>
+			            	<a href="#cubeRandom"><img src="__TMPL__Public/assets/images/demo/image-slider-2.jpg" class="cubeSize" /></a>
+			            	<div class="label_text">
+				                <p><a href="">Lorem ipsum dolor2222</a></p>
+				              </div>
+			            </li>
+			            <li>
+			            	<a href="#block"><img src="__TMPL__Public/assets/images/demo/image-slider-3.jpg" class="cubeShow" /></a>
+			            	<div class="label_text">
+				                <p><a href="">Lorem ipsum dolor3333</a></p>
+				              </div>
+			            </li>
+			          </ul>
+			        </div>
+			     </div>
+			</div>
 		</div>
 		<div class="pull-right w-4 module-list">
 			<php>
@@ -371,7 +426,40 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 				</ul>
 			</li>
 		</ul>
-		<h3 class="nav-title">房产热点</h3>
+		<div class="fc-hot bg-grad bg-pad">
+			<php>
+				$fc_hot = get_main_nav_and_terms(2,array('tag'=>'tag_fc'), 6, false);
+			</php>
+			<volist name="fc_hot" id="item">
+				<php>
+					$long_label = empty($item['long_label']) ? $item['label'] : $item['long_label'];
+				</php>
+				<h3 class="nav-title">{$long_label}</h3>	
+				<ul class="rd-hot">
+					<volist name="item['posts']" id="vo" key="k">
+						<php>
+							$post_title = str_replace('“', '"', $vo['post_title']);
+							$post_title = str_replace('”', '"', $post_title);
+							$smeta=json_decode($vo['smeta'],true);
+						</php>
+						<if condition="$k eq 1">
+							<li>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">
+									<if condition="empty($smeta['thumb'])"> 
+										<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
+									<else /> 
+										<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$vo.ad_title}" />
+									</if>
+								</a>
+							</li>
+						<else />
+							<li><a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,18)}</a></li>
+						</if>
+					</volist>
+				</ul>
+			</volist>
+			
+		</div>
 	</div>
 	
 </div>
@@ -455,8 +543,6 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 				</div>
 			</volist>
 		</div>
-	</div>
-	<div class="pull-left w-1 section-3-left">
 		<div class="pull-left w-1 module">
 			<php>
 				$ys_hy = get_main_nav_and_terms(1,array('tag'=>'tag_ys,tag_hy'), 7, false);
@@ -522,7 +608,58 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 		</div>
 	</div>
 	<div class="pull-right w-2 hot section-3-right">
-		
+		<div class="stock bg-grad bg-pad">
+			<ul>
+				<li><span>上证指数</span></li>
+				<li class="active"><span>深圳成指</span></li>
+				<li><span>创业扳指</span></li>
+			</ul>
+			<div id="stock-B">
+				<img src="__TMPL__Public/assets/images/demo/stock-demo.png" alt="" />
+			</div>
+		</div>
+		<div class="collaborate  bg-grad bg-pad">
+			<php>
+				$hz = get_main_nav_and_terms(2,array('tag'=>'tag_hz'), 9, false);
+			</php>
+			<volist name="hz" id="item">
+				<php>
+					$long_label = empty($item['long_label']) ? $item['label'] : $item['long_label'];
+				</php>
+				<h3 class="title">{$long_label}</h3>	
+				<ul>
+					<volist name="item['posts']" id="vo" key="k">
+						<php>
+							//$post_title = str_replace('“', '"', $vo['post_title']);
+							//$post_title = str_replace('”', '"', $post_title);
+						</php>
+						<li>
+							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($vo['post_title'],0,18)}</a>
+						</li>
+					</volist>
+				</ul>
+			</volist>
+		</div>
+		<div class="rank-list bg-grad bg-pad">
+			<h3 class="nav-title" style="font-size: 15px;">星图排行榜</h3>
+			<ul class="options">
+				<li class="active"><a href="">日榜</a></li>
+				<li><a href="">周榜</a></li>
+				<li><a href="">月榜</a></li>
+			</ul>
+			<ul class="rank-info">
+				<li>
+					<span class="sort">1</span>
+					<span class="name">中国新闻网</span>
+					<span class="nums">指数100</span>
+				</li>
+				<li>
+					<span class="sort">2</span>
+					<span class="name">中国新闻网</span>
+					<span class="nums">指数98</span>
+				</li>
+			</ul>
+		</div>
 	</div>
 	
 </div>
