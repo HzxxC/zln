@@ -4,6 +4,7 @@
 	<div class="wrap">
 		<ul class="nav nav-tabs">
 			<li class="active"><a>{:L('USER_INDEXADMIN_INDEX')}</a></li>
+			<li><a href="{:U('Indexadmin/add')}">添加用户</a></li>
 		</ul>
 		<form class="well form-search" method="post" action="{:U('Indexadmin/index')}">
 			用户ID： 
@@ -19,12 +20,12 @@
 					<tr>
 						<th align="center">ID</th>
 						<th>{:L('USERNAME')}</th>
-						<th>{:L('NICENAME')}</th>
+						<!-- <th>{:L('NICENAME')}</th> -->
 						<th>{:L('AVATAR')}</th>
-						<th>{:L('EMAIL')}</th>
-						<th>{:L('REGISTRATION_TIME')}</th>
-						<th>{:L('LAST_LOGIN_TIME')}</th>
-						<th>{:L('LAST_LOGIN_IP')}</th>
+						<!-- <th>{:L('EMAIL')}</th> -->
+						<th>添加时间</th>
+						<!-- <th>{:L('LAST_LOGIN_TIME')}</th> -->
+						<!-- <th>{:L('LAST_LOGIN_IP')}</th> -->
 						<th>{:L('STATUS')}</th>
 						<th align="center">{:L('ACTIONS')}</th>
 					</tr>
@@ -34,18 +35,24 @@
 					<foreach name="list" item="vo">
 					<tr>
 						<td align="center">{$vo.id}</td>
-						<td>{$vo['user_login']?$vo['user_login']:($vo['mobile']?$vo['mobile']:L('THIRD_PARTY_USER'))}</td>
+						<!-- <td>{$vo['user_login']?$vo['user_login']:($vo['mobile']?$vo['mobile']:L('THIRD_PARTY_USER'))}</td> -->
 						<td>{$vo['user_nicename']?$vo['user_nicename']:L('NOT_FILLED')}</td>
-						<td><img width="25" height="25" src="{:U('user/public/avatar',array('id'=>$vo['id']))}" /></td>
-						<td>{$vo.user_email}</td>
+						<td>
+							<if condition="$vo['avatar']">
+								<img width="25" height="25" src="{:sp_get_asset_upload_path($vo['avatar'])}" />
+							<else />
+								<img width="25" height="25" src="{:U('user/public/avatar',array('id'=>$vo['id']))}" />
+							</if>
+						</td>
+						<!-- <td>{$vo.user_email}</td> -->
 						<td>{$vo.create_time}</td>
-						<td>{$vo.last_login_time}</td>
-						<td>{$vo.last_login_ip}</td>
+						<!-- <td>{$vo.last_login_time}</td> -->
+						<!-- <td>{$vo.last_login_ip}</td> -->
 						<td>{$user_statuses[$vo['user_status']]}</td>
 						<td align="center">
 							<neq name="vo.id" value="1">
-								<a href="{:U('indexadmin/ban',array('id'=>$vo['id']))}" class="js-ajax-dialog-btn" data-msg="{:L('BLOCK_USER_CONFIRM_MESSAGE')}">{:L('BLOCK_USER')}</a>|
-								<a href="{:U('indexadmin/cancelban',array('id'=>$vo['id']))}" class="js-ajax-dialog-btn" data-msg="{:L('ACTIVATE_USER_CONFIRM_MESSAGE')}">{:L('ACTIVATE_USER')}</a>
+								<a href="{:U('Indexadmin/edit', array('id'=>$vo['id']))}">编辑</a>|
+								<a href="{:U('Indexadmin/del', array('id'=>$vo['id']))}"  class="js-ajax-delete">删除</a>
 							<else/>
 								<a style="color: #ccc;">{:L('BLOCK_USER')}</a>|
 								<a style="color: #ccc;">{:L('ACTIVATE_USER')}</a>

@@ -15,6 +15,7 @@ class PageController extends HomebaseController{
     // 页面内页
 	public function index() {
 		$id=I('get.id',0,'intval');
+		$navid=I('get.navid',0,'intval');
 		$content=sp_sql_page($id);
 		
 		if(empty($content)){
@@ -31,6 +32,8 @@ class PageController extends HomebaseController{
 		$tplname=empty($smeta['template'])?"":$smeta['template'];
 		
 		$tplname=sp_get_apphome_tpl($tplname, "page");
+
+		$this->assign('navid', $navid);
 		
 		$this->display(":$tplname");
 	}

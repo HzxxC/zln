@@ -41,6 +41,39 @@
 							</td>
 						</tr>
 						<tr>
+							<th>作者/名博</th>
+							<td>
+							<php>
+								$author = (!empty($post['author']) && $post['author_type'] == 2)  ? $post['author'] : "";
+								
+								$checked_1 = $post['author_type'] == 2 ? "checked" : "";
+								$checked_2 = $post['author_type'] == 3 ? "checked" : "";
+							</php>
+								<input type="radio" name="radio" id="outlink_radio" {$checked_1}>
+								<input type="text" name="post[author]" id="outlink_input" value="{$author}" style="width:200px;" placeholder="作者">
+								<input type="radio" name="radio" id="selecturl_radio" {$checked_2}>
+								<input type="hidden" name="post[author_type]" value="{$post.author_type}" />
+								<select name="post[author]" id="selecthref" style="width:200px;">
+									<option value="1">名博作者</option>
+									<foreach name="users" item="vo">
+										<if condition="$vo['id'] eq $post['author'] and $post['author_type'] eq 3">
+											<option value="{$vo.id}" selected>{$vo.user_nicename}</option>
+										<else/>
+											<option value="{$vo.id}">{$vo.user_nicename}</option>
+										</if>
+									</foreach>
+								</select>
+								<span class="form-required">*</span>
+							</td>
+						</tr>
+						<tr>
+							<th>责任编辑</th>
+							<td>
+								<input type="text" style="width:200px;" name="post[editor]" id="title" required value="{$post.editor}" placeholder=""/>
+								<span class="form-required">*</span>
+							</td>
+						</tr>
+						<tr>
 							<th>关键词</th>
 							<td>
 								<input type="text" name="post[post_keywords]" style="width: 400px" value="{$post['post_keywords']}" placeholder="请输入关键字">
@@ -335,6 +368,24 @@
 				});
 			});
 			////-------------------------
+		});
+		$(function() {
+			$("#selecthref,#selecturl_radio").click(function() {
+				$('#outlink_input').removeAttr('name');
+				$(this).attr('name','post[author]');
+				$('input[name="post[author_type]"]').val("3");
+				$('#selecturl_radio').attr({
+					'checked' : 'checked'
+				});
+			});
+			$("#outlink_input,#outlink_radio").click(function() {
+				$('#selecthref').removeAttr('name');
+				$('#outlink_input').attr('name','post[author]');
+				$('input[name="post[author_type]"]').val("2");
+				$('#outlink_radio').attr({
+					'checked' : 'checked'
+				});
+			});
 		});
 	</script>
 </body>

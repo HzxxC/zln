@@ -1,0 +1,61 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('Indexadmin/index')}">{:L('USER_INDEXADMIN_INDEX')}</a></li>
+			<li class="active"><a>添加用户</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('Indexadmin/edit_post')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">{:L('USERNAME')}</label>
+					<div class="controls">
+						<input type="hidden" name="id" value="{$id}" />
+						<input type="text" name="user_nicename" value="{$user_nicename}">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">类型</label>
+					<div class="controls">
+						<input type="hidden" name="user_type" value="3">
+						<input type="text" value="名博" readonly="true">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">头像</label>
+					<div class="controls">
+						<input type="hidden" name="avatar" id="thumb" value="{$avatar}">
+						<a href="javascript:upload_one_image('图片上传','#thumb');">
+							<if condition="empty($avatar)">
+								<img src="__TMPL__Public/assets/images/default-thumbnail.png" id="thumb-preview" width="135" style="cursor: hand"/>
+							<else />
+								<img src="{:sp_get_image_preview_url($avatar)}" id="thumb-preview" width="135" style="cursor: hand"/>
+							</if>
+						</a>
+						<input type="button" class="btn btn-small" onclick="$('#thumb-preview').attr('src','__TMPL__Public/assets/images/default-thumbnail.png');$('#thumb').val('');return false;" value="取消图片">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态</label>
+					<div class="controls">
+						<php>
+							$qy_status = $user_status == 1 ? "selected" : "";
+							$lh_status = $user_status == 0 ? "selected" : "";
+						</php>
+						<select name="user_status">
+							<option value="1" {$qy_status}>启用</option>
+							<option value="0" {$lh_status}>拉黑</option>
+						</select>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">提交</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

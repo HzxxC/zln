@@ -12,9 +12,13 @@
 		</ul>
 	</div>
 	<div class="web-options">
+		<php>
+			$lx_fz = get_footer_nav(array("tag"=>"tag_fzlc,tag_lxwm"));
+		</php>
 		<ul>
-			<li><a href="">联系我们</a></li>
-			<li><a href="">发展历程</a></li>
+			<volist name="lx_fz" id="vo">
+				<li><a href="{$vo.href}">{$vo['label']}</a></li>
+			</volist>
 			<li><a href="#">设为首页</a></li>
 			<li><a href="#">加入收藏</a></li>
 		</ul>

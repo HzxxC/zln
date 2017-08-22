@@ -39,6 +39,29 @@
 							</td>
 						</tr>
 						<tr>
+							<th>作者/名博</th>
+							<td>
+								<input type="radio" name="radio" id="outlink_radio">
+								<input type="text" name="post[author]" id="outlink_input" required value="" style="width:200px;" placeholder="作者">
+								<input type="radio" name="radio" id="selecturl_radio">
+								<input type="hidden" name="post[author_type]" value="" />
+								<select name="post[author]" id="selecthref" style="width:200px;">
+									<option value="1">名博作者</option>
+									<foreach name="users" item="vo">
+										<option value="{$vo.id}">{$vo.user_nicename}</option>
+									</foreach>
+								</select>
+								<span class="form-required">*</span>
+							</td>
+						</tr>
+						<tr>
+							<th>责任编辑</th>
+							<td>
+								<input type="text" style="width:200px;" name="post[editor]" id="title" required value="" placeholder=""/>
+								<span class="form-required">*</span>
+							</td>
+						</tr>
+						<tr>
 							<th>关键词</th>
 							<td><input type="text" name="post[post_keywords]" id="keywords" value="" style="width: 400px" placeholder="请输入关键字"> 多关键词之间用空格或者英文逗号隔开</td>
 						</tr>
@@ -296,6 +319,24 @@
 				});
 			});
 			////-------------------------
+		});
+		$(function() {
+			$("#selecthref,#selecturl_radio").click(function() {
+				$('#outlink_input').removeAttr('name');
+				$(this).attr('name','post[author]');
+				$('input[name="post[author_type]"]').val("3");
+				$('#selecturl_radio').attr({
+					'checked' : 'checked'
+				});
+			});
+			$("#outlink_input,#outlink_radio").click(function() {
+				$('#selecthref').removeAttr('name');
+				$('#outlink_input').attr('name','post[author]');
+				$('input[name="post[author_type]"]').val("2");
+				$('#outlink_radio').attr({
+					'checked' : 'checked'
+				});
+			});
 		});
 	</script>
 </body>

@@ -15,18 +15,19 @@
 	<div class="pull-left list">
 		<div class="title">
 			<php>
-				$nav_link = get_back_nav_link($navid);
+				$links = empty($uid) ? get_back_nav_link($navid) : get_author_link($uid);
 			</php>
 			<ul>
 				<li>您现在正在浏览：</li>
-				<foreach name="nav_link" item="link">
+				<foreach name="links" item="link">
 					<li><a href="{$link.href}">{$link.label}</a></li>
 				</foreach>
 			</ul>
 		</div>
 		<div class="ul-list">
 			<php>
-				$lists = sp_sql_posts_paged("cid:$cat_id;order:post_date DESC;",15);
+				$tag = "order:post_date desc;";
+				$lists = empty($uid) ? sp_sql_posts_paged("cid:$cat_id;order:post_date DESC;",15) : get_mb_user_post($tag, array("author"=>$uid, "author_type"=>'3'), 15);
 			</php>
 			<ul>
 				<volist name="lists['posts']" id="vo">
@@ -36,7 +37,7 @@
 					$post_title = str_replace('”', '"', $post_title);
 				</php>
 				<li>
-					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'], 'navid'=>$navid))}" target="blank">{:msubstr($post_title,0,40)}</a>
+					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'], 'navid'=>$navid, 'uid'=>$uid))}" target="blank">{:msubstr($post_title,0,40)}</a>
 					<span class="date pull-right">[{$vo.post_date}]</span>
 				</li>
 				</volist>
@@ -49,9 +50,10 @@
 	<div class="pull-right hot">
 		<ul>
 			<php>
-				$attention_post = sp_sql_posts("cid:15;field:post_title,object_id,term_id,smeta;order:post_date asc;limit:7;"); 
-
-				$cid = empty($cat_id) ? '' : 'cid:'.$cat_id;
+				$id_array = get_ids_array(2,array("tag"=>"tag_gz"));
+				$term_id = $id_array['term_id'];
+				$attention_post = sp_sql_posts("cid: $term_id;field:post_title,object_id,term_id,smeta;order:post_date asc;limit:7;"); 
+				$cid = empty($cat_id) ?  $id_array['term_id'] : 'cid:'.$cat_id;
 				$tag = $cid.";field:ad_title,object_id,term_id,smeta;order:add_date desc;limit:2;";
 				$ad_recommend = sq_recommend_ad($tag);
 				if ($ad_recommend) 
@@ -65,14 +67,14 @@
 				</php>
 				<if condition="$k eq 1">
 					<li class="text-bold">
-						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,17)}</a>
+						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,16)}</a>
 					</li>
 				<elseif condition="$k eq 7 and $vo['ad_title']" />
 					<li class="ad">
-						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,15)}</a>
+						<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,15)}</a>
 					</li>
 				<elseif condition="$k eq 9 and $vo['ad_title']" />
-					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid, 'type'=>'ad'))}" class="top-img">
+					<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid, 'type'=>'ad'))}" class="top-img">
 						<if condition="empty($smeta['thumb'])"> 
 							<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 						<else /> 
@@ -87,14 +89,20 @@
 			</volist>
 		</ul>
 		<div class="web-intro">
-			<h3 class="title">全国中老年网</h3>
-			<ul>
-				<li data-id="A"><a href="javascript:;">中心简介</a></li>
-				<li data-id="B"><a href="javascript:;">组织机构</a></li>
-				<li class="active" data-id="C"><a href="javascript:;">编委会</a></li>
+			<h3 class="nav-title">全国中老年网</h3>
+			<ul class="clearfix">
+				<li data-id="web-A" class="tab-item"><a href="javascript:;">中心简介</a></li>
+				<li data-id="web-B" class="tab-item"><a href="javascript:;">组织机构</a></li>
+				<li class="active tab-item" data-id="web-C"><a href="javascript:;">编委会</a></li>
 			</ul>
 			<div class="detail">
-				<div id="C" class="box active">
+				<div id="web-A" class="box">
+					
+				</div>
+				<div id="web-B" class="box">
+					
+				</div>
+				<div id="web-C" class="box active">
 					<dl>
 						<dt>总&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编：</dt>
 						<dd>李伟</dd>
@@ -105,7 +113,10 @@
 					</dl>
 					<dl>
 						<dt>副&nbsp;&nbsp;总&nbsp;&nbsp;编：</dt>
-						<dd><span>王晨</span><span>杜洁</span></dd>
+						<dd>
+							<span>王晨</span>
+							<span>杜洁</span>
+						</dd>
 					</dl>
 					<dl>
 						<dt>执行主编：</dt>
@@ -128,6 +139,17 @@
 </div>
 
 <tc_include file="Public:footer" />
-    
+<script type="text/javascript" language="javascript" src="__TMPL__Public/assets/js/skitter/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" language="javascript">
+$(document).ready(function() {
+	// tab 标签页
+	$('.tab-item').on('click', function() {
+		var _id = $(this).data('id');
+		$(this).addClass('active').siblings().removeClass('active');
+		$('#'+_id).addClass('active').siblings().removeClass('active');
+		
+	});
+});
+</script>
 </body>
 </html>

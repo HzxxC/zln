@@ -20,6 +20,13 @@
 			  numbers: true,
 			  dots: false
 			});
+			// tab 标签页
+			$('.tab-item').on('click', function() {
+				var _id = $(this).data('id');
+				$(this).addClass('active').siblings().removeClass('active');
+				$('#'+_id).addClass('active').siblings().removeClass('active');
+				
+			});
 		});
 		</script>
 		<style>
@@ -38,40 +45,47 @@
 <tc_include file="Public:nav" />
 
 <php>
-$home_slides=sp_getslide("portal_index");
-
-$home_slides=empty($home_slides)?$default_home_slides:$home_slides;
+	$img_slides=sp_getslide("_img");
+	$video_slides=sp_getslide("_video");
+	$img_slides=empty($img_slides) ? $default_home_slides : $img_slides;
+	$video_slides = empty($video_slides) ? $default_home_slides : $video_slides;
 </php>
 
 <div class="container clearfix index">
 	<div class="pull-left w-1 section-1-left">
-		<div class="pull-left w-3" style="height: 250px; background-color: #f5f5f5;">
-			<div class="tab-slide">
-				<a href="javascript:;" data-id="slide-A" class="active">图片新闻</a>
-				<a href="javascript:;" data-id="slide-B">视频新闻</a>
+		<div class="pull-left w-3" style="height: 250px; position: relative; background-color: #f5f5f5; overflow: hidden;">
+			<div class="tab-slide clearfix">
+				<a href="javascript:;" data-id="slide-A" class="active pull-left tab-item">图片新闻</a>
+				<a href="javascript:;" data-id="slide-B" class="pull-left tab-item">视频新闻</a>
 			</div>
-			<div class="slide" id="slide-A">
+			<div class="slide active" id="slide-A">
 				<div class="skitter-large-box">
 			        <div class="skitter skitter-large">
 			          <ul>
-			            <li>
-			            	<a href="#cube"><img src="__TMPL__Public/assets/images/demo/image-slider-1.jpg" class="cubeHide" /></a>
-			            	 <div class="label_text">
-				                <p><a href="">Lorem ipsum dolor</a></p>
-				              </div>
-			            </li>
-			            <li>
-			            	<a href="#cubeRandom"><img src="__TMPL__Public/assets/images/demo/image-slider-2.jpg" class="cubeSize" /></a>
-			            	<div class="label_text">
-				                <p><a href="">Lorem ipsum dolor2222</a></p>
-				              </div>
-			            </li>
-			            <li>
-			            	<a href="#block"><img src="__TMPL__Public/assets/images/demo/image-slider-3.jpg" class="cubeShow" /></a>
-			            	<div class="label_text">
-				                <p><a href="">Lorem ipsum dolor3333</a></p>
-				              </div>
-			            </li>
+			          	<volist name="img_slides" id="vo">
+			          		<li>
+			            		<a href="{$vo.slide_url}"><img src="{:sp_get_asset_upload_path($vo['slide_pic'])}" /></a>
+				            	 <div class="label_text">
+					                <p><a href="">{:msubstr($vo['slide_name'],0,15)}</a></p>
+					             </div>
+			           		 </li>
+			          	</volist>
+			          </ul>
+			        </div>
+			     </div>
+			</div>
+			<div class="slide" id="slide-B">
+				<div class="skitter-large-box">
+			        <div class="skitter skitter-large">
+			          <ul>
+			          	<volist name="video_slides" id="vo">
+			          		<li>
+			            		<a href="{$vo.slide_url}"><img src="{:sp_get_asset_upload_path($vo['slide_pic'])}" /></a>
+				            	 <div class="label_text">
+					                <p><a href="">{:msubstr($vo['slide_name'],0,15)}</a></p>
+					             </div>
+			           		 </li>
+			          	</volist>
 			          </ul>
 			        </div>
 			     </div>
@@ -102,18 +116,18 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 					</php>
 					<if condition="$k eq 1">
 						<li class="text-bold">
-							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,18)}</a>
+							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$new['id']))}">{:msubstr($post_title,0,18)}</a>
 						</li>
 						<else/>
 						<li>
-							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,20)}</a>
+							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$new['id']))}">{:msubstr($post_title,0,20)}</a>
 						</li>
 					</if>
 					
 				</volist>
 				<volist name="new['ad']" id="vo">
 					<li class="ad">
-						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
+						<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$new['id'],'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
 					</li>
 				</volist>
 			</ul>
@@ -147,7 +161,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						</php>
 						<if condition="$k eq 1 or $k eq 2">
 							<div class="img-box w-6">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$hy['id']))}">
 									<if condition="empty($smeta['thumb'])"> 
 										<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 									<else /> 
@@ -159,17 +173,17 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						<elseif condition="$k eq 3" />
 						</div><ul>
 							<li class="text-bold">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,22)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$hy['id']))}">{:msubstr($post_title,0,22)}</a>
 							</li>
 						<else />
 							<li>
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,28)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$hy['id']))}">{:msubstr($post_title,0,28)}</a>
 							</li>
 						</if>
 					</volist>
 					<volist name="hy['ad']" id="vo">
 						<li class="ad">
-							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
+							<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$hy['id'],'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
 						</li>
 					</volist>
 					<if condition="$length lt 2">
@@ -188,9 +202,10 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 		</div>
 		<ul>
 			<php>
-				$attention_post = sp_sql_posts("cid:15;field:post_title,object_id,term_id,smeta;order:post_date asc;limit:7;"); 
-
-				$cid = empty($cat_id) ? '' : 'cid:'.$cat_id;
+				$id_array = get_ids_array(2,array("tag"=>"tag_gz"));
+				$term_id = $id_array['term_id'];
+				$attention_post = sp_sql_posts("cid: $term_id;field:post_title,object_id,term_id,smeta;order:post_date asc;limit:7;"); 
+				$cid = empty($cat_id) ?  $id_array['term_id'] : 'cid:'.$cat_id;
 				$tag = $cid.";field:ad_title,object_id,term_id,smeta;order:add_date desc;limit:2;";
 				$ad_recommend = sq_recommend_ad($tag);
 				if ($ad_recommend) 
@@ -204,14 +219,14 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 				</php>
 				<if condition="$k eq 1">
 					<li class="text-bold">
-						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,17)}</a>
+						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$id_array['id']))}">{:msubstr($post_title,0,17)}</a>
 					</li>
 				<elseif condition="$k eq 7 and $vo['ad_title']" />
 					<li class="ad">
-						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,15)}</a>
+						<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$id_array['id'],'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,15)}</a>
 					</li>
 				<elseif condition="$k eq 9 and $vo['ad_title']" />
-					<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid, 'type'=>'ad'))}" class="top-img">
+					<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$id_array['id'], 'type'=>'ad'))}" class="top-img">
 						<if condition="empty($smeta['thumb'])"> 
 							<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 						<else /> 
@@ -220,20 +235,26 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 					</a> 
 				<else />
 					<li>
-						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,18)}</a>
+						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$id_array['id']))}">{:msubstr($post_title,0,18)}</a>
 					</li>
 				</if>
 			</volist>
 		</ul>
 		<div class="web-intro">
 			<h3 class="nav-title">全国中老年网</h3>
-			<ul>
-				<li data-id="A"><a href="javascript:;">中心简介</a></li>
-				<li data-id="B"><a href="javascript:;">组织机构</a></li>
-				<li class="active" data-id="C"><a href="javascript:;">编委会</a></li>
+			<ul class="clearfix">
+				<li data-id="web-A" class="tab-item"><a href="javascript:;">中心简介</a></li>
+				<li data-id="web-B" class="tab-item"><a href="javascript:;">组织机构</a></li>
+				<li class="active tab-item" data-id="web-C"><a href="javascript:;">编委会</a></li>
 			</ul>
 			<div class="detail">
-				<div id="C" class="box active">
+				<div id="web-A" class="box">
+					
+				</div>
+				<div id="web-B" class="box">
+					
+				</div>
+				<div id="web-C" class="box active">
 					<dl>
 						<dt>总&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编：</dt>
 						<dd>李伟</dd>
@@ -244,7 +265,10 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 					</dl>
 					<dl>
 						<dt>副&nbsp;&nbsp;总&nbsp;&nbsp;编：</dt>
-						<dd><span>王晨</span><span>杜洁</span></dd>
+						<dd>
+							<span>王晨</span>
+							<span>杜洁</span>
+						</dd>
 					</dl>
 					<dl>
 						<dt>执行主编：</dt>
@@ -266,7 +290,6 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 	</div>
 	
 </div>
-
 <div class="container middle-ad">
 	<php>
 		$middle_ad = sq_recommend_ad("cid:1;field:ad_title,object_id,term_id,smeta;order:add_date desc;limit:1;", array('recommended'=>1));
@@ -275,7 +298,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 		<php>
 			$smeta=json_decode($vo['smeta'],true);
 		</php>
-		<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}">
+		<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'type'=>'ad'))}">
 			<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$vo.ad_title}" />
 		</a>	
 	</volist>
@@ -312,7 +335,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						</php>
 						<if condition="$k eq 1 or $k eq 2">
 							<div class="img-box w-6">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">
 									<if condition="empty($smeta['thumb'])"> 
 										<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 									<else /> 
@@ -324,17 +347,17 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						<elseif condition="$k eq 3" />
 						</div><ul>
 							<li class="text-bold">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,22)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,22)}</a>
 							</li>
 						<else />
 							<li>
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,28)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,28)}</a>
 							</li>
 						</if>
 					</volist>
 					<volist name="item['ad']" id="vo">
 						<li class="ad">
-							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
+							<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id'],'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
 						</li>
 					</volist>
 					<if condition="$xd_jk_length lt 2">
@@ -375,7 +398,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						</php>
 						<if condition="$k eq 1 or $k eq 2">
 							<div class="img-box w-6">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">
 									<if condition="empty($smeta['thumb'])"> 
 										<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 									<else /> 
@@ -387,17 +410,17 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						<elseif condition="$k eq 3" />
 						</div><ul>
 							<li class="text-bold">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,22)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,22)}</a>
 							</li>
 						<else />
 							<li>
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,28)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,28)}</a>
 							</li>
 						</if>
 					</volist>
 					<volist name="item['ad']" id="vo">
 						<li class="ad">
-							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
+							<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id'],'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
 						</li>
 					</volist>
 					<if condition="$ft_hd_length elt 2">
@@ -411,20 +434,45 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 		</div>
 	</div>
 	<div class="pull-right w-2 section-2-right">
+		<php>
+			$mb_list = get_mb_list("field:id,user_nicename,avatar;order:create_time desc;limit:3;");
+		</php>
 		<h3 class="nav-title">名博俱乐部</h3>
 		<ul class="mb-list">
-			<li class="">
-				<div class="user-info clearfix">
-					<a href="" class="pull-left user-icon"><img src="__TMPL__Public/assets/images/demo/user_icon.png" alt="" /></a>
-					<div class="pull-right">
-						<a href="" class="name">大梨子：芝士鸡排</a>
-						<p class="top-article">香脆爆浆芝士鸡排...<a href="">[详细]</a></p>
-					</div>
-				</div>
-				<ul class="article-list">
-					<li><a href="">笛子：大吉大利的喜庆年菜</a></li>
-				</ul>
-			</li>
+			<volist name="mb_list" id="mb">
+				<li class="">
+					<div class="user-info clearfix">
+						<a href="{:U('list/user_articles', array('uid'=>$mb['id']))}" class="pull-left user-icon">
+							<if condition="$mb['avatar']">
+								<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$mb.user_nicename}" />
+							<else/>
+								<img src="__TMPL__Public/assets/images/demo/user_icon.png" alt="" />
+							</if>
+						</a>
+						<div class="pull-right">
+							<a href="{:U('list/user_articles', array('uid'=>$mb['id']))}" class="name">{$mb.user_nicename}</a>
+							<php>
+								$mb_post_length = count($mb['post']);
+							</php>
+							<if condition="$mb_post_length eq 0">
+								</div>
+							</div>
+							<ul class="article-list">
+							<else/>
+								<volist name="mb['post']" id="post" key="k">
+									<if condition="$k eq 1">
+										<p class="top-article">{:msubstr($post['post_title'],0,8)}<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'uid'=>$mb['id']))}">[详细]</a></p>
+										</div>
+									</div>
+									<ul class="article-list">
+									<else/>
+										<li><a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'uid'=>$mb['id']))}">{:msubstr($post['post_title'],0,18)}</a></li>
+									</if>
+								</volist>
+							</if>
+						</ul>
+				</li>
+			</volist>
 		</ul>
 		<div class="fc-hot bg-grad bg-pad">
 			<php>
@@ -444,7 +492,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						</php>
 						<if condition="$k eq 1">
 							<li>
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">
 									<if condition="empty($smeta['thumb'])"> 
 										<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 									<else /> 
@@ -453,7 +501,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 								</a>
 							</li>
 						<else />
-							<li><a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,18)}</a></li>
+							<li><a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,18)}</a></li>
 						</if>
 					</volist>
 				</ul>
@@ -464,7 +512,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 	
 </div>
 
-<div class="container middle-ad-2">
+<div class="container middle-ad-2 clearfix">
 	<php>
 		$middle_ad_2 = sq_recommend_ad("cid:1;field:ad_title,object_id,term_id,smeta;order:ad_id asc;limit:2;", array('recommended'=>0));
 	</php>
@@ -472,7 +520,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 		<php>
 			$smeta=json_decode($vo['smeta'],true);
 		</php>
-		<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}">
+		<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'type'=>'ad'))}">
 			<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$vo.ad_title}" />
 		</a>	
 	</volist>
@@ -509,7 +557,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						</php>
 						<if condition="$k eq 1 or $k eq 2">
 							<div class="img-box w-6">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">
 									<if condition="empty($smeta['thumb'])"> 
 										<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 									<else /> 
@@ -521,17 +569,17 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						<elseif condition="$k eq 3" />
 						</div><ul>
 							<li class="text-bold">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,22)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,22)}</a>
 							</li>
 						<else />
 							<li>
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,28)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,28)}</a>
 							</li>
 						</if>
 					</volist>
 					<volist name="item['ad']" id="vo">
 						<li class="ad">
-							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
+							<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id'],'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
 						</li>
 					</volist>
 					<if condition="$yp_xx_length lt 2">
@@ -572,7 +620,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						</php>
 						<if condition="$k eq 1 or $k eq 2">
 							<div class="img-box w-6">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">
 									<if condition="empty($smeta['thumb'])"> 
 										<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
 									<else /> 
@@ -584,17 +632,17 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 						<elseif condition="$k eq 3" />
 						</div><ul>
 							<li class="text-bold">
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,22)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,22)}</a>
 							</li>
 						<else />
 							<li>
-								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($post_title,0,28)}</a>
+								<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($post_title,0,28)}</a>
 							</li>
 						</if>
 					</volist>
 					<volist name="item['ad']" id="vo">
 						<li class="ad">
-							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid,'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
+							<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id'],'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,17)}</a>
 						</li>
 					</volist>
 					<if condition="$ys_hy_length elt 2">
@@ -610,11 +658,17 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 	<div class="pull-right w-2 hot section-3-right">
 		<div class="stock bg-grad bg-pad">
 			<ul>
-				<li><span>上证指数</span></li>
-				<li class="active"><span>深圳成指</span></li>
-				<li><span>创业扳指</span></li>
+				<li data-id="stock-A" class="tab-item"><span>上证指数</span></li>
+				<li data-id="stock-B" class="tab-item active"><span>深圳成指</span></li>
+				<li data-id="stock-C" class="tab-item"><span>创业扳指</span></li>
 			</ul>
-			<div id="stock-B">
+			<div id="stock-A">
+				<img src="__TMPL__Public/assets/images/demo/stock-demo.png" alt="" />
+			</div>
+			<div id="stock-B" class="active">
+				<img src="__TMPL__Public/assets/images/demo/stock-demo.png" alt="" />
+			</div>
+			<div id="stock-C">
 				<img src="__TMPL__Public/assets/images/demo/stock-demo.png" alt="" />
 			</div>
 		</div>
@@ -634,7 +688,7 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 							//$post_title = str_replace('”', '"', $post_title);
 						</php>
 						<li>
-							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$navid))}">{:msubstr($vo['post_title'],0,18)}</a>
+							<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$item['id']))}">{:msubstr($vo['post_title'],0,18)}</a>
 						</li>
 					</volist>
 				</ul>
@@ -642,23 +696,53 @@ $home_slides=empty($home_slides)?$default_home_slides:$home_slides;
 		</div>
 		<div class="rank-list bg-grad bg-pad">
 			<h3 class="nav-title" style="font-size: 15px;">星图排行榜</h3>
-			<ul class="options">
-				<li class="active"><a href="">日榜</a></li>
-				<li><a href="">周榜</a></li>
-				<li><a href="">月榜</a></li>
+			<ul class="options clearfix">
+				<li class="active tab-item" data-id="rank-A"><a href="javascript:;">日榜</a></li>
+				<li class="tab-item" data-id="rank-B"><a href="javascript:;">周榜</a></li>
+				<li class="tab-item" data-id="rank-C"><a href="javascript:;">月榜</a></li>
 			</ul>
-			<ul class="rank-info">
-				<li>
-					<span class="sort">1</span>
-					<span class="name">中国新闻网</span>
-					<span class="nums">指数100</span>
-				</li>
-				<li>
-					<span class="sort">2</span>
-					<span class="name">中国新闻网</span>
-					<span class="nums">指数98</span>
-				</li>
-			</ul>
+			<div id="rank-A" class="active">
+				<php>
+					$days = get_rank_list("order:day_index desc;limit:10;");
+				</php>
+				<ul class="rank-info">
+					<volist name="days" id="vo" key="k">
+						<li>
+							<span class="sort">{$k}</span>
+							<span class="name">{$vo.title}</span>
+							<span class="nums">指数{$vo.day_index}</span>
+						</li>
+					</volist>
+				</ul>
+			</div>
+			<div id="rank-B">
+				<php>
+					$week = get_rank_list("order:week_index desc;limit:10;");
+				</php>
+				<ul class="rank-info">
+					<volist name="week" id="vo" key="k">
+						<li>
+							<span class="sort">{$k}</span>
+							<span class="name">{$vo.title}</span>
+							<span class="nums">指数{$vo.week_index}</span>
+						</li>
+					</volist>
+				</ul>
+			</div>
+			<div id="rank-C">
+				<php>
+					$month = get_rank_list("order:month_index desc;limit:10;");
+				</php>
+				<ul class="rank-info">
+					<volist name="month" id="vo" key="k">
+						<li>
+							<span class="sort">{$k}</span>
+							<span class="name">{$vo.title}</span>
+							<span class="nums">指数{$vo.month_index}</span>
+						</li>
+					</volist>
+				</ul>
+			</div>
 		</div>
 	</div>
 	

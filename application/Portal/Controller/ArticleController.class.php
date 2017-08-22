@@ -16,14 +16,14 @@ class ArticleController extends HomebaseController {
     	$article_id=I('get.id',0,'intval');
     	$term_id=I('get.cid',0,'intval');
         $navid = I('get.navid',0,'intval');
+        $uid = I('get.uid',0,'intval');
     	
     	$posts_model=M("Posts");
     	
     	$article=$posts_model
     	->alias("a")
-    	->field('a.*,c.user_login,c.user_nicename,b.term_id')
+    	->field('a.*,b.term_id')
     	->join("__TERM_RELATIONSHIPS__ b ON a.id = b.object_id")
-		->join("__USERS__ c ON a.post_author = c.id")
 		->where(array('a.id'=>$article_id,'b.term_id'=>$term_id))
 		->find();
     	
@@ -45,25 +45,28 @@ class ArticleController extends HomebaseController {
     	$article_date=$article['post_date'];
     	
     	$join = '__POSTS__ as b on a.object_id =b.id';
-    	$join2= '__USERS__ as c on b.post_author = c.id';
     	
     	$term_relationships_model= M("TermRelationships");
     	
+        $where_user = empty($uid) ? array('a.term_id'=>$term_id) : array('author_type'=>3, 'author'=>$uid);
+
     	$next=$term_relationships_model
     	->alias("a")
-    	->join($join)->join($join2)
-    	->where(array('b.id'=>array('gt',$article_id),"post_date"=>array("egt",$article_date),"a.status"=>1,'a.term_id'=>$term_id,'post_status'=>1))
+    	->join($join)
+    	->where(array('b.id'=>array('gt',$article_id),"a.status"=>1,'post_status'=>1))
+        ->where($where_user)
     	->order("post_date asc,b.id asc")
     	->find();
     	
     	$prev=$term_relationships_model
     	->alias("a")
-    	->join($join)->join($join2)
-    	->where(array('b.id'=>array('lt',$article_id),"post_date"=>array("elt",$article_date),"a.status"=>1,'a.term_id'=>$term_id,'post_status'=>1))
+    	->join($join)
+    	->where(array('b.id'=>array('lt',$article_id),"a.status"=>1,'post_status'=>1))
+        ->where($where_user)
     	->order("post_date desc,b.id desc")
     	->find();
     	
-    	$this->assign("next",$next);
+        $this->assign("next",$next);
     	$this->assign("prev",$prev);
     	
     	$smeta=json_decode($article['smeta'],true);
@@ -76,12 +79,54 @@ class ArticleController extends HomebaseController {
     	$this->assign("term",$term);
     	$this->assign("article_id",$article_id);
         $this->assign('navid', $navid);
+        $this->assign('uid', $uid);
     	
     	$tplname=$term["one_tpl"];
     	$tplname=empty($smeta['template'])?$tplname:$smeta['template'];
     	$tplname=sp_get_apphome_tpl($tplname, "article");
     	
     	$this->display(":$tplname");
+    }
+
+    public function ad_index() {
+        $article_id=I('get.id',0,'intval');
+        $term_id=I('get.cid',0,'intval');
+        $navid = I('get.navid',0,'intval');
+        $type = I('get.type', '');
+        
+        $ad_model=M("Ad");
+        $article=$ad_model
+        ->alias("a")
+        ->field('ad_id as id, ad_title as post_title, ad_content as post_content, ad_status as status, add_date as post_date, b.term_id')
+        ->join(C('DB_PREFIX')."ad_relationships b ON a.ad_id = b.object_id")
+        ->where(array('a.ad_id'=>$article_id,'b.term_id'=>$term_id))
+        ->find();
+        
+        if(empty($article)){
+            header('HTTP/1.1 404 Not Found');
+            header('Status:404 Not Found');
+            if(sp_template_file_exists(MODULE_NAME."/404")){
+                $this->display(":404");
+            }
+            return;
+        }
+        
+        $ad_model->where(array('id'=>$article_id))->setInc('post_hits');
+        
+        $smeta=json_decode($article['smeta'],true);
+        $content_data=sp_content_page($article['post_content']);
+        $article['post_content']=$content_data['content'];
+        
+        $this->assign($article);
+        $this->assign("smeta",$smeta);
+        $this->assign("article_id",$article_id);
+        $this->assign('navid', $navid);
+        $this->assign('type', $type);
+
+        $tplname="article";
+        $tplname=sp_get_apphome_tpl($tplname, "article");
+        
+        $this->display(":$tplname");
     }
     
     // 文章点赞

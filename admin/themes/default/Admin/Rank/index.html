@@ -1,0 +1,72 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a>排行榜</a></li>
+			<li><a href="{:U('rank/add')}">添加排行</a></li>
+		</ul>
+		<form method="post" class="js-ajax-form">
+			<div class="table-actions">
+				<button class="btn btn-primary btn-small js-ajax-submit" type="submit" data-action="{:U('rank/toggle',array('display'=>1))}" data-subcheck="true">{:L('DISPLAY')}</button>
+				<button class="btn btn-primary btn-small js-ajax-submit" type="submit" data-action="{:U('rank/toggle',array('hide'=>1))}" data-subcheck="true">{:L('HIDE')}</button>
+			</div>
+			<php> $status=array("1"=>L('DISPLAY'),"0"=>L('HIDDEN')); </php>
+			<table class="table table-hover table-bordered table-list">
+				<thead>
+					<tr>
+						<th width="16"><label><input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x"></label></th>
+						<th width="50">ID</th>
+						<th>名称</th>
+						<th>日榜指数</th>
+						<th>周榜指数</th>
+						<th>月榜指数</th>
+						<th width="45">{:L('STATUS')}</th>
+						<th width="120">{:L('ACTIONS')}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<foreach name="ranks" item="vo">
+					<tr>
+						<td><input type="checkbox" class="js-check" data-yid="js-check-y" data-xid="js-check-x" name="ids[]" value="{$vo.id}"></td>
+						<td>{$vo.id}</td>
+						<td>{$vo.title}</td>
+						<td>{$vo.day_index}</td>
+						<td>{$vo.week_index}</td>
+						<td>{$vo.month_index}</td>
+						<td>
+							<notempty name="vo.status">
+								<a data-toggle="tooltip" title="显示"><i class="fa fa-check"></i></a>
+								<else/>
+								<a data-toggle="tooltip" title="隐藏"><i class="fa fa-close"></i></a>
+							</notempty>
+						</td>
+						<td>
+							<a href="{:U('rank/edit',array('id'=>$vo['id']))}">{:L('EDIT')}</a> 
+							| <a href="{:U('rank/delete',array('id'=>$vo['id']))}" class="js-ajax-delete">{:L('DELETE')}</a>
+						</td>
+					</tr>
+					</foreach>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th width="16"><label><input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x"></label></th>
+						<th width="50">ID</th>
+						<th>名称</th>
+						<th>日榜指数</th>
+						<th>周榜指数</th>
+						<th>月榜指数</th>
+						<th width="45">{:L('STATUS')}</th>
+						<th width="120">{:L('ACTIONS')}</th>
+					</tr>
+				</tfoot>
+			</table>
+			<div class="table-actions">
+				<button class="btn btn-primary btn-small js-ajax-submit" type="submit" data-action="{:U('ad/toggle',array('display'=>1))}" data-subcheck="true">{:L('DISPLAY')}</button>
+				<button class="btn btn-primary btn-small js-ajax-submit" type="submit" data-action="{:U('ad/toggle',array('hide'=>1))}" data-subcheck="true">{:L('HIDE')}</button>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

@@ -57,4 +57,18 @@ class ListController extends HomebaseController {
         );
 		return sp_get_nav4admin($navcatname,$datas,$navrule) ;
 	}
+
+	public function user_articles() {
+
+		$uid = I('get.uid',0,'intval');
+		// 当前页码
+		$p = I('get.p',1,'intval');
+
+		$tplname = "list";
+    	$tplname=sp_get_apphome_tpl($tplname, "list");
+
+    	$this->assign('uid', $uid);
+    	$this->assign('p', $p);
+    	$this->display(":$tplname");
+	}
 }

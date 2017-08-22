@@ -23,6 +23,8 @@ class IndexadminController extends AdminbaseController {
             $keyword_complex['_logic'] = 'or';
             $where['_complex'] = $keyword_complex;
         }
+
+        $where['user_type'] = 3;
         
     	$users_model=M("Users");
     	
@@ -39,6 +41,56 @@ class IndexadminController extends AdminbaseController {
     	$this->assign("page", $page->show('Admin'));
     	
     	$this->display(":index");
+    }
+
+    public function add() {
+        $this->display(":add");
+    }
+
+    public function add_post() {
+        $this->users_model = M('Users');
+        if (IS_POST) {
+            $data=I("post.");
+            if ($this->users_model->create($data)!==false) {
+                $result=$this->users_model->add();
+                if ($result!==false) {
+                    $data['id']=$result;
+                    $data['create_time'] = date('y-m-d H:i:s', time());
+                    $this->users_model->save($data);
+                    $this->success("添加成功！", U("indexadmin/index"));
+                } else {
+                    $this->error("添加失败！");
+                }
+            } else {
+                $this->error($this->users_model->getError());
+            }
+        }
+    }
+    public function edit() {
+
+        $this->users_model = M('Users');
+    
+        $id= I("get.id",0,'intval');
+        $userinfo=$this->users_model->where(array('id'=>$id))->find();
+    
+        $this->assign($userinfo);
+        $this->display(":edit");
+    }
+
+    public function edit_post() {
+        $this->users_model = M('Users');
+        if (IS_POST) {
+            $data=I("post.");
+            if ($this->users_model->create($data)!==false) {
+                if ($this->users_model->save() !==false) {
+                    $this->success("添加成功！", U("indexadmin/index"));
+                } else {
+                    $this->error("添加失败！");
+                }
+            } else {
+                $this->error($this->users_model->getError());
+            }
+        }
     }
     
     // 后台本站用户禁用

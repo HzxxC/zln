@@ -7,92 +7,174 @@
 		<tc_include file="Public:head" />
 		<style>
 			#article_content img{height:auto !important}
+			#article_content {word-wrap: break-word;}
+    		.btn {margin-top: 33px;}
 		</style>
 	</head>
 <body class="">
+<tc_include file="Public:top" />
 <tc_include file="Public:nav" />
-<div class="container tc-main">
-	<div class="row">
-		<div class="span9">
-			
-			<div class="tc-box first-box article-box">
-		    	<h2>{$post_title}</h2>
-		    	<hr>
-		    	<div id="article_content">
-		    	{$post_content}
-		    	</div>
-		    	
-		    	{:hook('comment',array(
-		    		'post_id'=>$id,
-		    		'post_table'=>'posts',
-		    		'post_title'=>$post_title
-		    	))}
-		    </div>
-		    
+ <!-- list -->
+<div class="container main clearfix">
+	<div class="pull-left list">
+		<div class="title">
+			<php>
+				$links = empty($uid) ? get_back_nav_link($navid) : get_author_link($uid);
+			</php>
+			<ul>
+				<li>您现在正在浏览：</li>
+				<foreach name="links" item="link">
+					<li><a href="{$link.href}">{$link.label}</a></li>
+				</foreach>
+				<if condition="$type eq 'ad'"><li><a>广告</a></li></if>
+			</ul>
 		</div>
-		<div class="span3">
-			<div class="tc-box first-box">
-				<div class="headtitle">
-	          		<h2>分享</h2>
-	          	</div>
-	          	<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a></div>
-<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"32"},"share":{},"image":{"viewList":["weixin","tsina","qzone","tqq","renren"],"viewText":"分享到：","viewSize":"32"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","tsina","qzone","tqq","renren"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
-        	</div>
-        	
-        	<div class="tc-box">
-	        	<div class="headtitle">
-	        		<h2>热门文章</h2>
-	        	</div>
-	        	<div class="ranking">
-	        		<php>
-						$hot_articles=sp_sql_posts("cid:$portal_index_lastnews;field:post_title,post_excerpt,object_id,term_id,smeta;order:post_hits desc;limit:5;"); 
-					</php>
-		        	<ul class="unstyled">
-		        		<foreach name="hot_articles" item="vo">
-		        			<php>$top=$key<3?"top3":"";</php>
-							<li class="{$top}"><i>{$key+1}</i><a title="{$vo.post_title}" href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id']))}">{$vo.post_title}</a></li>
-						</foreach>
-					</ul>
+		<div class="content">
+			<h3>{$post_title}</h3>
+			<p class="article-info">
+				<php>
+					$post_date = substr($post_date, 0, 10);
+					$author = empty($author) ? 'admin' : ($author_type == 2 ? $author : get_author_info($author));
+				</php>
+				<span class="publishtime">发布时间：{$post_date}</span>
+				<if condition="$type neq 'ad'">
+					<span class="source">来源：{$post_source}</span>
+					<span class="author">作者：{$author}</span>
+				</if>
+			</p>
+			<div class="article">
+				{$post_content}
+			</div>
+			<if condition="$type neq 'ad'">
+				<div class="editor">
+					<p>责任编辑：{$editor}</p>
+				</div>
+				<div class="pre-next-article">
+					<if condition="!empty($prev)">
+						<div class="pre">上一篇：
+							<a href="{:leuu('article/index',array('id'=>$prev['object_id'],'cid'=>$prev['term_id'],'navid'=>$navid,'uid'=>$uid))}">
+								<span class="title">{$prev['post_title']}</span>
+							</a>
+						</div>
+					<else />
+						<div class="pre">上一篇：<a href="javascript:;">【无】</a></div>
+					</if>
+					<if condition="!empty($next)">
+						<div class="next">下一篇：
+							<a href="{:leuu('article/index',array('id'=>$next['object_id'],'cid'=>$next['term_id'],'navid'=>$navid,'uid'=>$uid))}">
+								<span class="title">{$next['post_title']}</span>
+							</a>
+						</div>
+					<else />
+						<div class="next">下一篇：<a href="javascript:;">【无】</a></div>
+					</if>
+				</div>
+			</if>
+		</div>
+	</div>
+	<div class="pull-right hot">
+		<ul>
+			<php>
+				$id_array = get_ids_array(array("tag"=>"tag_gz"));
+				$term_id = $id_array['term_id'];
+				$attention_post = sp_sql_posts("cid: $term_id;field:post_title,object_id,term_id,smeta;order:post_date asc;limit:7;"); 
+				$cid = empty($cat_id) ?  $id_array['term_id'] : 'cid:'.$cat_id;
+				$tag = $cid.";field:ad_title,object_id,term_id,smeta;order:add_date desc;limit:2;";
+				$ad_recommend = sq_recommend_ad($tag);
+				if ($ad_recommend) 
+					$attention_post = ad_array_splice($attention_post, $ad_recommend, array(6, 8));
+			</php>
+			<volist name="attention_post" id="vo" key="k">
+				<php>
+					$post_title = str_replace('“', '"', $vo['post_title']);
+					$post_title = str_replace('”', '"', $post_title);
+					$smeta=json_decode($vo['smeta'],true);
+				</php>
+				<if condition="$k eq 1">
+					<li class="text-bold">
+						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$id_array['id']))}">{:msubstr($post_title,0,16)}</a>
+					</li>
+				<elseif condition="$k eq 7 and $vo['ad_title']" />
+					<li class="ad">
+						<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'type'=>'ad'))}"><span class="gray">广告&nbsp;|&nbsp;</span>{:msubstr($vo['ad_title'],0,15)}</a>
+					</li>
+				<elseif condition="$k eq 9 and $vo['ad_title']" />
+					<a href="{:leuu('article/ad_index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'type'=>'ad'))}" class="top-img">
+						<if condition="empty($smeta['thumb'])"> 
+							<img src="__TMPL__Public/assets/images/default_tupian4.png" alt="{$vo.ad_title}"/>
+						<else /> 
+							<img src="{:sp_get_asset_upload_path($smeta['thumb'])}" alt="{$vo.ad_title}" />
+						</if>
+					</a> 
+				<else />
+					<li>
+						<a href="{:leuu('article/index',array('id'=>$vo['object_id'],'cid'=>$vo['term_id'],'navid'=>$id_array['id']))}">{:msubstr($post_title,0,18)}</a>
+					</li>
+				</if>
+			</volist>
+		</ul>
+		<div class="web-intro">
+			<h3 class="nav-title">全国中老年网</h3>
+			<ul class="clearfix">
+				<li data-id="web-A" class="tab-item"><a href="javascript:;">中心简介</a></li>
+				<li data-id="web-B" class="tab-item"><a href="javascript:;">组织机构</a></li>
+				<li class="active tab-item" data-id="web-C"><a href="javascript:;">编委会</a></li>
+			</ul>
+			<div class="detail">
+				<div id="web-A" class="box">
+					
+				</div>
+				<div id="web-B" class="box">
+					
+				</div>
+				<div id="web-C" class="box active">
+					<dl>
+						<dt>总&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编：</dt>
+						<dd>李伟</dd>
+					</dl>
+					<dl>
+						<dt>执行总编：</dt>
+						<dd>许全斌</dd>
+					</dl>
+					<dl>
+						<dt>副&nbsp;&nbsp;总&nbsp;&nbsp;编：</dt>
+						<dd>
+							<span>王晨</span>
+							<span>杜洁</span>
+						</dd>
+					</dl>
+					<dl>
+						<dt>执行主编：</dt>
+						<dd><span>李晓</span></dd>
+					</dl>
+					<dl>
+						<dt style="vertical-align: top;">副&nbsp;&nbsp;主&nbsp;&nbsp;编：</dt>
+						<dd>
+							<span>张彬</span>
+							<span>刘黎明</span>
+							<span>陈安岳</span>
+							<span>安燕</span>
+							<span>姚安斌</span>
+						</dd>
+					</dl>
 				</div>
 			</div>
-			
-			<php>$ad=sp_getad("portal_page_right_aside");</php>
-			<if condition="!empty($ad)">
-        	<div class="tc-box">
-	        	<div class="headtitle">
-	        		<h2>赞助商</h2>
-	        	</div>
-	        	<div>
-		        	{$ad}
-		        </div>
-			</div>
-			</if>
-			
-			<div class="tc-box">
-	        	<div class="headtitle">
-	        		<h2>最新评论</h2>
-	        	</div>
-	        	<div class="comment-ranking">
-	        		<php>$last_comments=sp_get_comments("field:*;limit:0,5;order:createtime desc;");</php>
-	        		<foreach name="last_comments" item="vo">
-	                    <div class="comment-ranking-inner">
-	                        <i class="fa fa-comment"></i>
-	                        <a href="{:U('user/index/index',array('id'=>$vo['uid']))}">{$vo.full_name}:</a>
-	                        <span>{$vo.content}</span>
-	                        <a href="__ROOT__/{$vo.url}#comment{$vo.id}">查看原文</a>
-	                        <span class="comment-time">{:date('m月d日  H:i',strtotime($vo['createtime']))}</span>
-	                    </div>
-                    </foreach>
-                </div>
-			</div>
-        	
 		</div>
-		
 	</div>
-              
-<tc_include file="Public:footer"/>
 </div>
+<tc_include file="Public:footer" />
+<script type="text/javascript" language="javascript" src="__TMPL__Public/assets/js/skitter/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" language="javascript">
+$(document).ready(function() {
+	// tab 标签页
+	$('.tab-item').on('click', function() {
+		var _id = $(this).data('id');
+		$(this).addClass('active').siblings().removeClass('active');
+		$('#'+_id).addClass('active').siblings().removeClass('active');
+		
+	});
+});
+</script>
 
-<tc_include file="Public:scripts"/>
 </body>
 </html>

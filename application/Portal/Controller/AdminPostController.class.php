@@ -36,6 +36,9 @@ class AdminPostController extends AdminbaseController {
 		$term_id = I("get.term",0,'intval');
 		$this->_getTermTree();
 		$term=$this->terms_model->where(array('term_id'=>$term_id))->find();
+
+		$users = M("Users")->where(array('user_type'=>3,'user_status'=>1))->select();
+		$this->assign("users", $users);
 		$this->assign("term",$term);
 		$this->assign("terms",$terms);
 		$this->display();
@@ -82,6 +85,8 @@ class AdminPostController extends AdminbaseController {
 		$this->_getTermTree($term_relationship);
 		$terms=$this->terms_model->select();
 		$post=$this->posts_model->where("id=$id")->find();
+		$users = M("Users")->where(array('user_type'=>3,'user_status'=>1))->select();
+		$this->assign("users", $users);
 		$this->assign("post",$post);
 		$this->assign("smeta",json_decode($post['smeta'],true));
 		$this->assign("terms",$terms);

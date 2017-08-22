@@ -2179,10 +2179,11 @@ function get_back_nav_link($id) {
 	array_push($nav_link, $default);
 
 	$navs = nav_is_child($id);
-
-	foreach ($navs as $key => $value) {
-		$nav_info = get_nav_info($value);
-		array_push($nav_link, $nav_info);
+	if ($id) {
+		foreach ($navs as $key => $value) {
+			$nav_info = get_nav_info($value);
+			array_push($nav_link, $nav_info);
+		}
 	}
 	return $nav_link;
 
@@ -2300,7 +2301,7 @@ function ad_array_splice($arr1, $arr2, $position) {
 function get_main_nav_and_terms($cid, $where=array(), $limit=6, $ad=false) {
 	$nav_model = M('Nav');
 	$nav_model -> field('id, label, long_label, href') -> where(array('cid'=>$cid, 'status'=>1));
-		if (isset($where)) {
+	if (isset($where)) {
 	    $where['tag'] = explode(',', $where['tag']);
 		$condition['tag'] = array('in',$where['tag']);
 		$nav_model -> where($condition);
@@ -2319,6 +2320,171 @@ function get_main_nav_and_terms($cid, $where=array(), $limit=6, $ad=false) {
 		}
 		$navs[$k]['nav_childs'] = get_nav_childs($v['id']);
 		$navs[$k]['posts'] = $posts;
+	}
+
+	return $navs;
+}
+
+function get_mb_list($tag,$where=array()) {
+	$where=is_array($where) ? $where : array();
+	$tag=sp_param_lable($tag);
+	
+	$field = !empty($tag['field']) ? $tag['field'] : '*';
+	$limit = !empty($tag['limit']) ? $tag['limit'] : '0,3';
+	$order = !empty($tag['order']) ? $tag['order'] : 'create_time DESC';
+
+	//根据参数生成查询条件
+	$where['user_status'] = array('eq',1);
+	$where['user_type'] = array('eq',3);
+
+	
+	$user_model= M("Users");
+
+    $users = $user_model->field($field)->where($where)->order($order)->limit($limit)->select();
+    foreach ($users as $key => $value) {
+    	$term_id = get_term_id_by_href($v['href']);
+		$tag = "field:post_title,object_id,term_id,smeta;order:post_date desc;limit:3;";
+		$content = get_mb_user_post($tag, array("author"=>$value['id'], "author_type"=>'3'));
+		$users[$key]['post'] = $content['posts'];
+    }
+	
+	return $users;
+}
+
+function get_mb_user_post($tag, $where=array(),$pagesize=0,$pagetpl='') {
+	$where=is_array($where)?$where:array();
+	$tag=sp_param_lable($tag);
+	
+	$field = !empty($tag['field']) ? $tag['field'] : '*';
+	$limit = !empty($tag['limit']) ? $tag['limit'] : '0,10';
+	$order = !empty($tag['order']) ? $tag['order'] : 'post_date DESC';
+
+	//根据参数生成查询条件
+	$where['term_relationships.status'] = array('eq',1);
+	$where['posts.post_status'] = array('eq',1);
+
+	if (isset($tag['where'])) {
+		$where['_string'] = $tag['where'];
+	}
+
+	$join = '__POSTS__ as posts on term_relationships.object_id = posts.id';
+	
+	$term_relationships_model= M("TermRelationships");
+	$content=array();
+
+    if (empty($pagesize)) {
+	   $posts=$term_relationships_model
+	    ->alias("term_relationships")
+	    ->join($join)
+	    ->field($field)
+	    ->where($where)
+	    ->order($order)
+	    ->group("term_relationships.object_id")
+	    ->limit($limit)
+	    ->select();
+	}else{
+	    $pagetpl = empty($pagetpl) ? '<div class="newpager">共有{recordcount}条记录&nbsp;&nbsp;第&nbsp;{pageindex}&nbsp;页&nbsp;/&nbsp;共&nbsp;{pagecount}&nbsp;页&nbsp;&nbsp;{first}{prev}{next}{last}&nbsp;&nbsp;第&nbsp;{jump}&nbsp;页</div>' : $pagetpl;
+	    $totalsize=$term_relationships_model
+	    ->alias("term_relationships")
+	    ->join($join)
+	    ->field($field)
+	    ->where($where)
+	    ->group("term_relationships.object_id")
+	    ->count();
+	    
+	    $pagesize = intval($pagesize);
+	    $page_param = C("VAR_PAGE");
+	    $page = new \Page($totalsize,$pagesize);
+        $pagesetting=array("first" => "首页", "last" => "末页", "prev" => "上一页", "next" => "下一页", "disabledclass" => "","jump"=>"select");
+        $page->SetPager('default', $pagetpl, $pagesetting);
+	    $posts=$term_relationships_model
+	    ->alias("term_relationships")
+	    ->join($join)
+	    ->field($field)
+	    ->where($where)
+	    ->group("term_relationships.object_id")
+	    ->order($order)
+	    ->limit($page->firstRow, $page->listRows)
+	    ->select();
+	    
+	    $content['page']=$page->show();
+	    $content['total_pages']=$page->getTotalPages(); // 总页数
+	    $content['count']=$totalsize;
+	}
+	
+	$content['posts']=$posts;
+	
+	return $content;
+}
+
+function get_author_link($uid) {
+
+	$nav_link = array();
+	$default = array('label' => '首页', 'href' => __ROOT__.'/');
+
+	array_push($nav_link, $default);
+
+	$user_model= M("Users");
+	$field = "id, user_nicename as label";
+	$where['status'] = 1;
+	$where['user_type'] = 3;
+	$where['id'] = $uid;
+    $users = $user_model->field($field)->where($where)->find();
+    $users['href'] = U('list/user_articles', array("uid"=>$users['id']));
+
+    array_push($nav_link, $users);
+    
+    return $nav_link;
+}
+
+function get_author_info($uid) {
+	$user_model= M("Users");
+	$where['status'] = 1;
+	$where['user_type'] = 3;
+	$where['id'] = $uid;
+    $users = $user_model->field($field)->where($where)->getField('user_nicename');
+    return $users;
+}
+
+function get_rank_list($tag) {
+	$tag=sp_param_lable($tag);
+	$order = !empty($tag['order']) ? $tag['order'] : 'id asc';
+	$limit = !empty($tag['limit']) ? $tag['limit'] : '0,10';
+
+	$where['status'] = 1;
+	$ranks = M('Rank') -> where($where) -> order($order) -> limit($limit) -> select();
+	return $ranks;
+}
+
+function get_ids_array($cid, $where=array()) {
+	$nav_model = M('Nav');
+	$nav_model -> field('id, href') -> where(array('cid'=>$cid, 'status'=>1));
+	if (isset($where)) {
+	    $where['tag'] = explode(',', $where['tag']);
+		$condition['tag'] = array('in',$where['tag']);
+		$nav_model -> where($condition);
+	}
+		
+	$navs = $nav_model -> order('listorder ASC') -> find();
+
+	$navs['term_id'] = get_term_id_by_href($navs['href']);
+
+	return $navs;
+}
+
+function get_footer_nav($where=array()) {
+	$nav_model = M('Nav');
+	$nav_model -> field('id, label, href') -> where(array('status'=>1));
+	if (isset($where)) {
+	    $where['tag'] = explode(',', $where['tag']);
+		$condition['tag'] = array('in',$where['tag']);
+		$nav_model -> where($condition);
+	}
+		
+	$navs = $nav_model -> order('listorder ASC') -> select();
+
+	foreach ($navs as $key => $value) {
+		$navs[$key]['href'] = format_href($value['id'],$value['href']);
 	}
 
 	return $navs;

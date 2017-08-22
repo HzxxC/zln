@@ -1,0 +1,60 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('rank/index')}">排行榜</a></li>
+			<li><a href="{:U('rank/add')}">添加排行</a></li>
+			<li class="active"><a>编辑</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('rank/edit_post')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">名称</label>
+					<div class="controls">
+						<input type="hidden" name="id" value="{$ranks.id}" />
+						<input type="text" name="title" value="{$ranks.title}"><span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">日指数</label>
+					<div class="controls">
+						<input type="text" name="day_index" value="{$ranks.day_index}"><span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">周指数</label>
+					<div class="controls">
+						<input type="text" name="week_index" value="{$ranks.week_index}"><span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">月指数</label>
+					<div class="controls">
+						<input type="text" name="month_index" value="{$ranks.month_index}"><span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">{:L('STATUS')}</label>
+					<div class="controls">
+						<php>
+							$status_yes = $ranks['status'] == 1 ? "selected" : "";
+							$status_no = $ranks['status'] == 0 ? "selected" : "";
+						</php>
+						<select name="status">
+							<option value="1" {$status_yes}>{:L('DISPLAY')}</option>
+							<option value="0" {$status_no}>{:L('HIDDEN')}</option>
+						</select>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">编辑</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

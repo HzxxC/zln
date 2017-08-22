@@ -230,7 +230,7 @@ header.header {
 }
 .tab-slide a {
 	display: inline-block;
-	width: 49%;
+	width: 50%;
 	padding: 12px 0;
 	text-align: center;
 	color: #fff;
@@ -240,8 +240,15 @@ header.header {
 	text-decoration: none;
 }
 .slide {
+	/*display: none;*/
+	position: absolute;
 	width: 410px;
 	height: 206px;
+	top: 44px;
+	z-index: -1;
+}
+.slide.active {
+	z-index: 99;
 }
 
 .module-list .top-img img {
@@ -429,19 +436,30 @@ h3.nav-title:before {
 	list-style: none;
 }
 .web-intro ul li {
-	display: inline-block;
-	width: 32%;
+	float: left;
+	display: block;
+	width: 33%;
 	padding: 6px 0;
 	text-align: center;
 }
-.web-intro ul li.active {
+.web-intro ul li.active, .web-intro ul li:hover {
 	background-color: #eee;
 }
 .web-intro ul li a {
 	color: #898989;
 }
+.web-intro ul li a:hover, .web-intro ul li a:focus {
+	text-decoration: none;
+}
 .web-intro .detail {
 	padding: 8px 0 0 6px;
+}
+.web-intro .detail .box {
+	display: none;
+	height: 160px;
+}
+.web-intro .detail .box.active {
+	display: block;
 }
 .web-intro .detail dl {
 	margin-bottom: 10px;
@@ -455,7 +473,7 @@ h3.nav-title:before {
 	font-weight: 500;
 }
 .web-intro .detail dl dd {
-	width: 120px;
+	width: 118px;
 }
 .content h3 {
 	width: 60%;
@@ -474,7 +492,16 @@ h3.nav-title:before {
 	padding-right: 15px;
 }
 .content .article {
-	margin-bottom: 35px;
+	margin-bottom: 5px;
+}
+.editor {
+	text-align: right;
+	margin-bottom: 15px;
+	padding-right: 25px;
+}
+.editor p {
+	font-weight: 600;
+	color: #3898E4;
 }
 .content .pre-next-article > div {
 	color: #000;
@@ -593,8 +620,12 @@ footer.footer {
 	margin: 10px auto 0px;
 }
 .middle-ad-2 a {
+	float: left;
 	display: inline-block;
 	width: 498px;
+}
+.middle-ad-2 a:first-child {
+	margin-right: 4px;
 }
 .middle-ad a img, .middle-ad-2 a img {
 	display: block;
@@ -604,6 +635,9 @@ footer.footer {
 .border-bottom {
 	padding-bottom: 8px;
 	border-bottom: 2px solid #FDCF00;
+}
+.mb-list > li:not(:first-child) {
+	padding-top: 10px;
 }
 .mb-list > li:not(:last-child) {
 	padding-bottom: 10px;
@@ -631,6 +665,7 @@ footer.footer {
 .mb-list .top-article {
 	font-size: 13px;
 	color: #7D7D7D;
+	padding-top: 6px;
 }
 .mb-list .article-list li {
 	position: relative;
@@ -667,6 +702,12 @@ footer.footer {
 .stock {
 	padding: 5px 10px;
 }
+.stock > div {
+	display: none;
+}
+.stock > div.active {
+	display: block;
+}
 .stock ul li {
 	display: inline-block;
 	padding: 8px 0;
@@ -677,6 +718,10 @@ footer.footer {
 }
 .stock ul li.active {
 	background-color: #eee;
+}
+.stock img {
+	display: block;
+	width: 100%;
 }
 .collaborate {
 	margin-top: 15px;
@@ -709,7 +754,8 @@ footer.footer {
 	margin-bottom: 10px;
 }
 .rank-list .options li {
-	display: inline-block;
+	float: left;
+	display: block;
 	width: 32%;
 	padding: 5px 0;
 	text-align: center;
@@ -724,6 +770,12 @@ footer.footer {
 }
 .rank-list .options li.active {
 	background-color: #eee;
+}
+.rank-list > div {
+	display: none;
+}
+.rank-list > div.active {
+	display: block;
 }
 .rank-list .rank-info li {
 	position: relative;
